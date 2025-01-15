@@ -5,13 +5,14 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class OrderController extends Controller
 {
     public function index()
     {
         $orders = Order::all();
-        return response()->json($orders);
+        return Inertia::render('User/Order', ['orders' => $orders]);
     }
     public function create()
     {

@@ -8,6 +8,7 @@
 6. command for refresh migrate : php artisan migrate:refresh
 7. command for init Laravel storage : php artisan storage:link
 8. command for populate seed : php artisan db:seed
+9. command for checking route list : php artisan route:list
 
 
 ## SYSTEM REQUIREMENT

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\LandingPage;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LandingPageController extends Controller
 {
     public function index()
     {
-        return view('welcome');
+        $landingpage = LandingPage::all();
+        return Inertia::render('User/LandingPage', ['orders' => $landingpage]);
     }
 
     /**
