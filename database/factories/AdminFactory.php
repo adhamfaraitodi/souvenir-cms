@@ -2,23 +2,21 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-class UserFactory extends Factory
+class AdminFactory extends Factory
 {
-    protected $model = User::class;
-    public function definition(): array
+    protected $model = Admin::class;
+    public function definition()
     {
         return [
-            'admin_id' => \App\Models\Admin::factory(),
+            'name' => $this->faker->name,
             'username' => $this->faker->userName,
             'password' => bcrypt('password'),
-            'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
-            'phone' => $this->faker->numerify('+62###########'),
+            'role' => $this->faker->randomElement(['pemilik', 'karyawan']),
             'created_at' => now(),
             'updated_at' => now(),
-            ];
+        ];
     }
 }
