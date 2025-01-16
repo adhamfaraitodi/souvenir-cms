@@ -1,15 +1,13 @@
-import { Link, useLocation, useNavigate } from "react-router";
 import classNames from "classnames";
 import { SignOut } from "@phosphor-icons/react";
 import { swalFireConfirm, swalFireResult } from "../../libs/swalFire.js";
+import { Link, usePage } from "@inertiajs/react";
 
 const linkClass =
     "flex items-center gap-2 font-bold text-md px-3 py-2 hover:bg-blue-400 hover:no-underline active:bg-indigo-600 rounded-lg text-base";
 
 const Sidebar = ({ sidebarLinks }) => {
-    const navigate = useNavigate();
-    const { pathname } = useLocation();
-
+    const { url } = usePage();
     const handleLogout = async () => {
         try {
             const result = await swalFireConfirm(
@@ -18,10 +16,10 @@ const Sidebar = ({ sidebarLinks }) => {
                 "warning"
             );
 
-            if (result.isConfirmed) {
-                localStorage.removeItem("token");
-                navigate("/login");
-            }
+            // if (result.isConfirmed) {
+            //     localStorage.removeItem("token");
+            //     // navigate("/login");
+            // }
         } catch (err) {
             swalFireResult("Gagal", "Gagal keluar dari akun", "error");
         }
@@ -35,9 +33,9 @@ const Sidebar = ({ sidebarLinks }) => {
                     <div key={index}>
                         <Link
                             key={link.key}
-                            to={link.path}
+                            href={link.path}
                             className={classNames(
-                                pathname === link.path
+                                url === link.path
                                     ? "bg-blue-500 text-white"
                                     : "text-white",
                                 linkClass

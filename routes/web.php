@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\LandingPageController as AdminLandingPageControll
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserManageController as AdminUserManageController;
 
-Route::get('/', function () {return Inertia::render('User/index');})->name('home');
+Route::get('/', function () {return Inertia::render('User/Index');})->name('home');
 // User routes
 Route::name('user.')->group(function () {
     Route::resource('orders', UserOrderController::class);
@@ -22,6 +22,8 @@ Route::name('user.')->group(function () {
     Route::resource('payments', UserPaymentController::class);
     Route::resource('products', UserProductController::class);
 });
+
+Route::get('/admin', function () {return Inertia::render('Admin/Index');})->name('home');
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->group(function () {
