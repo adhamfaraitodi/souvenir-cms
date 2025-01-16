@@ -17,6 +17,7 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'role',
     ];
     protected $hidden = [
         'password',
@@ -24,5 +25,9 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
+    }
+    public function getAuthIdentifierName()
+    {
+        return 'username';
     }
 }

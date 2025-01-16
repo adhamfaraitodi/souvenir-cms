@@ -2,20 +2,30 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
     use HasFactory;
+    use Notifiable;
     protected $fillable = [
         'username',
         'password',
         'email',
         'role'
     ];
+    protected $hidden = [
+        'password',
+    ];
     public function products()
     {
         return $this->hasMany(Product::class,'admin_id');
+    }
+    public function getAuthIdentifierName()
+    {
+        return 'username';
     }
 }

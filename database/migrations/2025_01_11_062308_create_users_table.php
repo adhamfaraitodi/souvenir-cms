@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('name', 30);
             $table->string('email', 255);
             $table->string('phone', 15);
+            $table->enum('role', ['user']);
             $table->timestamps();
 
             $table->foreign('admin_id')->references('admin_id')->on('admins')->onDelete('no action');

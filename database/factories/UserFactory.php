@@ -17,6 +17,7 @@ class UserFactory extends Factory
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->numerify('+62###########'),
+            'role' => $this->faker->randomElement(['user']),
             'created_at' => now(),
             'updated_at' => now(),
             ];

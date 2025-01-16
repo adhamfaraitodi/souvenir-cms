@@ -20,10 +20,9 @@ class UserAuthController extends Controller
             'password' => ['required'],
         ]);
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return Inertia::render('User/index');
+            return redirect()->route('user.home');
         }
-        return back()->withErrors(['username' => 'username or password is incorrect']);
+        return redirect("login")->withErrors(['username' => 'username or password is incorrect']);
     }
     public function logout(Request $request)
     {

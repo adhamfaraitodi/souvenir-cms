@@ -14,7 +14,7 @@ class AdminFactory extends Factory
             'username' => $this->faker->userName,
             'password' => bcrypt('password'),
             'email' => $this->faker->unique()->safeEmail,
-            'role' => $this->faker->randomElement(['pemilik', 'karyawan']),
+            'role' => $this->faker->randomElement(['admin']),
             'created_at' => now(),
             'updated_at' => now(),
         ];
