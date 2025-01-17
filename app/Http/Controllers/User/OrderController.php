@@ -12,7 +12,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::all();
-        return Inertia::render('User/Order', ['orders' => $orders]);
+        return Inertia::render('User/Order/Index', ['orders' => $orders]);
     }
     public function create()
     {

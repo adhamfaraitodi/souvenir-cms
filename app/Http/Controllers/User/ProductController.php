@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        //
+        $products = Product::all();
+        return Inertia::render('User/Product/Index', ['products' => $products]);
     }
 
     /**
