@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { useState } from "react";
+import { router } from "@inertiajs/react";
 
-function LoginForm() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+function Login() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -12,15 +12,21 @@ function LoginForm() {
         setLoading(true);
         setError(null);
 
-        router.post('/login', { username, password }, {
-            onSuccess: () => {
-                setLoading(false);
-            },
-            onError: (errors) => {
-                setLoading(false);
-                setError(errors.username || errors.password || 'Login failed');
+        router.post(
+            "/login",
+            { username, password },
+            {
+                onSuccess: () => {
+                    setLoading(false);
+                },
+                onError: (errors) => {
+                    setLoading(false);
+                    setError(
+                        errors.username || errors.password || "Login failed"
+                    );
+                },
             }
-        });
+        );
     };
 
     return (
@@ -46,11 +52,11 @@ function LoginForm() {
                 </div>
                 {error && <p>{error}</p>}
                 <button type="submit" disabled={loading}>
-                    {loading ? 'Logging in...' : 'Login'}
+                    {loading ? "Logging in..." : "Login"}
                 </button>
             </form>
         </div>
     );
 }
 
-export default LoginForm;
+export default Login;

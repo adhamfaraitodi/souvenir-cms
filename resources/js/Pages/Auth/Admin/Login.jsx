@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
 
-function LoginForm() {
+function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -53,4 +53,4 @@ function LoginForm() {
     );
 }
 
-export default LoginForm;
+export default Login;
