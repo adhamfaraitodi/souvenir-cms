@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\LandingPage;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LandingPageController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $landingpage = LandingPage::all();
+        return Inertia::render('Admin/LandingPage', ['orders' => $landingpage]);
     }
 
     /**

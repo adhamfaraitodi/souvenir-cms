@@ -16,7 +16,7 @@ const userMenus = [
     {
         key: "landing_page",
         label: "Landing Page",
-        path: "/landing",
+        path: "/landing-page",
         icon: <Book size={24} weight="bold" />,
     },
 ];
@@ -37,7 +37,7 @@ const adminMenus = [
     {
         key: "landing_page",
         label: "Landing Page",
-        path: "/admin/landing",
+        path: "/admin/landing-page",
         icon: <Book size={24} weight="bold" />,
     },
 ];

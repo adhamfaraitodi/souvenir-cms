@@ -12,7 +12,7 @@ class LandingPageController extends Controller
     public function index()
     {
         $landingpage = LandingPage::all();
-        return Inertia::render('User/Landing', ['orders' => $landingpage]);
+        return Inertia::render('User/LandingPage', ['orders' => $landingpage]);
     }
 
     /**
