@@ -36,7 +36,11 @@ class LandingPageController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $landingpage = LandingPage::find($id);
+        if (!$landingpage) {
+            return redirect()->route('user.landing-page.index')->with('error', 'landing page not found.');
+        }
+        return Inertia::render('User/LandingPage/Id/Index', ['landingpage' => $landingpage]);
     }
 
     /**

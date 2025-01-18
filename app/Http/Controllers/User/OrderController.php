@@ -16,15 +16,19 @@ class OrderController extends Controller
     }
     public function create()
     {
-        //
+        return Inertia::render('User/Order/Id/Add');
     }
     public function store(Request $request)
     {
-        //
+
     }
     public function show(string $id)
     {
-        //
+        $order = Order::find($id);
+        if (!$order) {
+            return redirect()->route('user.orders.index')->with('error', 'Order not found.');
+        }
+        return Inertia::render('User/Order/Id/Index', ['order' => $order]);
     }
     public function edit(string $id)
     {

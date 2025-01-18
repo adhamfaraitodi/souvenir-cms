@@ -36,7 +36,11 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $products = Product::find($id);
+        if (!$products) {
+            return redirect()->route('user.products.index')->with('error', 'Product not found.');
+        }
+        return Inertia::render('User/Product/Id/Index', ['product' => $products]);
     }
 
     /**
