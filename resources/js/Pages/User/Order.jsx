@@ -1,10 +1,10 @@
 import Layout from "../../components/Layout";
 import { userMenus } from "../../libs/menus";
 
-const Order = () => {
-    return <div>Order</div>;
+const Page = () => {
+    return <div>Page</div>;
 };
 
-Order.layout = (page) => <Layout children={page} menus={userMenus} />;
+Page.layout = (page) => <Layout children={page} menus={userMenus} />;
 
-export default Order;
+export default Page;

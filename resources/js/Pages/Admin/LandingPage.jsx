@@ -1,10 +1,10 @@
 import Layout from "../../components/Layout";
 import { adminMenus } from "../../libs/menus";
 
-const LandingPage = () => {
-    return <div>LandingPage</div>;
+const Page = () => {
+    return <div>Page</div>;
 };
 
-LandingPage.layout = (page) => <Layout children={page} menus={adminMenus} />;
+Page.layout = (page) => <Layout children={page} menus={adminMenus} />;
 
-export default LandingPage;
+export default Page;
