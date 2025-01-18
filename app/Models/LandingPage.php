@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class LandingPage extends Model
 {
     use HasFactory;
+    protected $table = 'landing_pages';
+    protected $primaryKey = 'landingpage_id';
     protected $fillable = [
         'title',
         'description',
