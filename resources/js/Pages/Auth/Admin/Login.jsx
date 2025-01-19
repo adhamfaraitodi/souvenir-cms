@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import InputForm from "../../../components/InputForm";
+import Button from "../../../components/Button";
+import Checkbox from "../../../components/Checkbox";
 
 const Page = () => {
     const [username, setUsername] = useState("");
@@ -31,13 +33,8 @@ const Page = () => {
     };
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 h-screen w-full gap-2">
-            <div className="hidden sm:flex items-center justify-center h-screen bg-costumeBlue">
-                {/* <img className="blox mx-auto w-56" src={logo} alt="" /> */}
-            </div>
-
+        <div className="grid grid-cols-2 h-screen w-full gap-2">
             <div className="flex flex-col justify-center items-center col-span-2">
-                {/* <img className="sm:hidden w-28" src={logoMobile} alt="" /> */}
                 <h1 className="text-costumeBlue text-md sm:text-4xl font-bold">
                     Login Admin
                 </h1>
@@ -47,26 +44,28 @@ const Page = () => {
                     onSubmit={handleLogin}
                 >
                     <InputForm
-                        className="mb-4"
+                        customClass="mb-4"
                         handleChange={setUsername}
                         label="Username"
                         placeholder="Masukan Username"
                     />
                     <InputForm
-                        className="mb-4"
+                        customClass="mb-4"
                         handleChange={setPassword}
                         label="Password"
                         placeholder="Masukan Password"
                         type="password"
                     />
+                    <Checkbox
+                        customClass="mb-4"
+                        label="Remember Me"
+                        name="remember"
+                    />
                     <div className="flex flex-col gap-2 items-start">
                         {error && <p className="text-red-500">{error}</p>}
-                        <button
-                            className="bg-costumeBlue text-white font-bold py-2 px-4 rounded-lg w-full focus:outline-none focus:shadow-outline"
-                            type="submit"
-                        >
+                        <Button type="submit">
                             {loading ? "Logging in..." : "Login"}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>
