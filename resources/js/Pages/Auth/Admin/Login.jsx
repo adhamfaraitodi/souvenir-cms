@@ -1,33 +1,55 @@
-import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { useState,useEffect, use } from "react";
+import { router,useForm } from "@inertiajs/react";
 import InputForm from "../../../components/InputForm";
+import axios from "axios";
+
 
 const Page = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { data, setData, post, errors, reset, processing } = useForm(
+        {
+            username: "",
+            password: "",
+            remember: false,
+        },
+    );
+    useEffect(() => {
+        return () => {
+            reset('password');
+        };
+    }, []);
+    useEffect(() => {
+        setData({
+            username: username,
+            password: password,
+
+        });
+    }, [username, password]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        // router.post(
+        //     "/login",
+        //     { username, password },
+        //     {
+        //         onSuccess: () => {
+        //             setLoading(false);
+        //         },
+        //         onError: (errors) => {
+        //             setLoading(false);
+        //             setError(
+        //                 errors.username || errors.password || "Login failed"
+        //             );
+        //         },
+        //     }
+        // );
 
-        router.post(
-            "/login",
-            { username, password },
-            {
-                onSuccess: () => {
-                    setLoading(false);
-                },
-                onError: (errors) => {
-                    setLoading(false);
-                    setError(
-                        errors.username || errors.password || "Login failed"
-                    );
-                },
-            }
-        );
+        post("/admin/login");
     };
 
     return (
@@ -51,6 +73,7 @@ const Page = () => {
                         handleChange={setUsername}
                         label="Username"
                         placeholder="Masukan Username"
+                        
                     />
                     <InputForm
                         className="mb-4"
@@ -58,7 +81,20 @@ const Page = () => {
                         label="Password"
                         placeholder="Masukan Password"
                         type="password"
+
                     />
+                    <div className="flex items-center mb-4">
+                        <input
+                            type="checkbox"
+                            className="mr-2"
+                            id="remember"
+                            name="remember"
+                            onChange={(e) => setData('remember', (e.target.checked))}
+                        />
+                        <label htmlFor="remember" className="text-sm">
+                            Remember me
+                        </label>
+                    </div>
                     <div className="flex flex-col gap-2 items-start">
                         {error && <p className="text-red-500">{error}</p>}
                         <button

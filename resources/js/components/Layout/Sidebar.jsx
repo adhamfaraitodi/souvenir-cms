@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { SignOut } from "@phosphor-icons/react";
 import { swalFireConfirm, swalFireResult } from "../../libs/swalFire.js";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage,router } from "@inertiajs/react";
+
 
 const linkClass =
     "flex items-center gap-2 font-bold text-md px-3 py-2 hover:bg-blue-400 hover:no-underline active:bg-indigo-600 rounded-lg text-base";
@@ -16,10 +17,12 @@ const Sidebar = ({ sidebarLinks }) => {
                 "warning"
             );
 
-            // if (result.isConfirmed) {
-            //     localStorage.removeItem("token");
-            //     // navigate("/login");
-            // }
+            if (result.isConfirmed) {
+                // localStorage.removeItem("token");
+                // navigate("/login");
+
+                router.post('/admin/logout');
+            }
         } catch (err) {
             swalFireResult("Gagal", "Gagal keluar dari akun", "error");
         }

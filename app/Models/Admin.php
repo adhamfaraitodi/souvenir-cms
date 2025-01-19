@@ -22,6 +22,14 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
     ];
+        /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'password' => 'hashed',
+    ];
     public function products()
     {
         return $this->hasMany(Product::class,'admin_id');

@@ -19,10 +19,13 @@ class AdminAuthController extends Controller
             'username' => ['required'],
             'password' => ['required'],
         ]);
-        if (Auth::attempt($credentials)) {
-            return redirect()->route('admin.home');
+        if (Auth::guard('admin')->attempt($credentials, $request->remember)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.home'));
+            // return response()->json(['username' => 'username or password is correct']);
         }
-        return back()->withErrors(['username' => 'username or password is incorrect']);
+        return response()->json(['error' => 'username or password is incorrect','data'=>$credentials], 401);
     }
     public function logout(Request $request)
     {
@@ -30,5 +33,20 @@ class AdminAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    public function globalLogout(Request $request)
+    {
+        if (Auth::guard('admin')->check()) {
+            Auth::guard('admin')->logout();
+            return redirect()->route('admin.login')->withErrors(['error' => 'Logged out successfully']);
+
+        }
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->withErrors(['error' => 'Logged out successfully']);
     }
 }
