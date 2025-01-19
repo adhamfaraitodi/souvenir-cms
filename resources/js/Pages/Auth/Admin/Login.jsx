@@ -1,35 +1,25 @@
-import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { useEffect } from "react";
+import { useForm } from "@inertiajs/react";
 import InputForm from "../../../components/InputForm";
 import Button from "../../../components/Button";
 import Checkbox from "../../../components/Checkbox";
 
 const Page = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const { data, setData, post, errors, reset, processing } = useForm({
+        username: "",
+        password: "",
+        remember: false,
+    });
+
+    useEffect(() => {
+        return () => {
+            reset("password");
+        };
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        router.post(
-            "/login",
-            { username, password },
-            {
-                onSuccess: () => {
-                    setLoading(false);
-                },
-                onError: (errors) => {
-                    setLoading(false);
-                    setError(
-                        errors.username || errors.password || "Login failed",
-                    );
-                },
-            },
-        );
+        post("/admin/login");
     };
 
     return (
@@ -45,13 +35,13 @@ const Page = () => {
                 >
                     <InputForm
                         customClass="mb-4"
-                        handleChange={setUsername}
+                        handleChange={(e) => setData({ ...data, username: e })}
                         label="Username"
                         placeholder="Fill Username"
                     />
                     <InputForm
                         customClass="mb-4"
-                        handleChange={setPassword}
+                        handleChange={(e) => setData({ ...data, password: e })}
                         label="Password"
                         placeholder="Fill Password"
                         type="password"
@@ -59,10 +49,16 @@ const Page = () => {
                     <Checkbox
                         customClass="mb-4"
                         label="Remember Me"
-                        name="remember"
+                        handleChange={(e) => setData({ ...data, remember: e })}
                     />
                     <div className="flex flex-col items-start gap-2">
-                        {error && <p className="text-red-500">{error}</p>}
+                        {Object.keys(errors).length > 0 && (
+                            <div className="w-full text-red-500">
+                                {Object.values(errors).map((error, index) => (
+                                    <p key={index}>{error}</p>
+                                ))}
+                            </div>
+                        )}
                         <Button type="submit">
                             {loading ? "Signing in..." : "Sign In"}
                         </Button>

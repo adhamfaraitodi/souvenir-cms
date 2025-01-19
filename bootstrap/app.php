@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             HandleInertiaRequests::class,
+            
         ]);
         $middleware->alias([
             'is_user'=>\App\Http\Middleware\UserMiddleware::class,

@@ -21,8 +21,8 @@ Route::get('login', [UserAuthController::class, 'showLoginForm'])->name('login')
 Route::post('login', [UserAuthController::class, 'login']);
 Route::post('logout', [UserAuthController::class, 'logout'])->name('logout');
 Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [AdminAuthController::class, 'admin.login']);
-Route::post('admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+Route::post('admin/login', [AdminAuthController::class, 'login']);
+Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name('admin.logout');
 
 // User routes
 Route::name('user.')->group(function () {

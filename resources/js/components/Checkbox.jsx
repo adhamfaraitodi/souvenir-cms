@@ -11,7 +11,7 @@ const Checkbox = ({ label, handleChange, customClass, name }) => {
             <input
                 type="checkbox"
                 name={name}
-                onChange={(e) => handleChange(e.target.value)}
+                onChange={(e) => handleChange(e.target.checked)}
             />
             <label className="block text-sm text-gray-700">{label}</label>
         </div>

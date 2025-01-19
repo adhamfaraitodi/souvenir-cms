@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import { router } from "@inertiajs/react";
 import { CaretDown, SignOut } from "@phosphor-icons/react";
 import { swalFireConfirm, swalFireResult } from "../../libs/swalFire.js";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
+
 import { useState } from "react";
 
 const linkClass = (disabled) =>
@@ -24,8 +24,10 @@ const Sidebar = ({ sidebarLinks }) => {
             );
 
             if (result.isConfirmed) {
-                router.post("/logout");
-                window.location.reload();
+                // localStorage.removeItem("token");
+                // navigate("/login");
+
+                router.post("/admin/logout");
             }
         } catch (err) {
             swalFireResult("Gagal", "Gagal keluar dari akun", "error");
