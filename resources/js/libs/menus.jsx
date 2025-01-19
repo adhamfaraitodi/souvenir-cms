@@ -1,6 +1,6 @@
 import {
-    Users,
-    Gear,
+    // Users,
+    // Gear,
     UserCircle,
     Trophy,
     Bag,
@@ -22,26 +22,26 @@ const userMenus = [
     },
     {
         key: "landing_page",
-        label: "Landing Page",
+        label: "Landing Pages",
         path: "/landing-page",
         icon: <Newspaper size={24} weight="bold" />,
     },
     {
         key: "account",
         label: "Account",
-        path: "/controls",
+        path: "/account",
         icon: <UserCircle size={24} />,
         disabled: true,
         items: [
             {
                 key: "profile",
                 label: "Profile",
-                path: "/controls/profile",
+                path: "/account/profile",
             },
             {
                 key: "setting",
                 label: "Setting",
-                path: "/controls/setting",
+                path: "/account/setting",
             },
         ],
     },
@@ -57,7 +57,7 @@ const adminMenus = [
     {
         key: "landing_page",
         label: "Landing Page",
-        path: "/admin/landing-page",
+        path: "/admin/landing-pages",
         icon: <Newspaper size={24} weight="bold" />,
     },
     {
@@ -66,18 +66,18 @@ const adminMenus = [
         path: "/admin/products",
         icon: <Trophy size={24} weight="bold" />,
     },
-    {
-        key: "users",
-        label: "Users",
-        path: "/admin/users",
-        icon: <Users size={24} weight="bold" />,
-    },
-    {
-        key: "manages",
-        label: "Manages",
-        path: "/admin/manages",
-        icon: <Gear size={24} weight="bold" />,
-    },
+    // {
+    //     key: "users",
+    //     label: "Users",
+    //     path: "/admin/users",
+    //     icon: <Users size={24} weight="bold" />,
+    // },
+    // {
+    //     key: "manages",
+    //     label: "Manages",
+    //     path: "/admin/manages",
+    //     icon: <Gear size={24} weight="bold" />,
+    // },
 ];
 
 export { userMenus, adminMenus };
