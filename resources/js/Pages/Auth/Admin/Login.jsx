@@ -47,13 +47,13 @@ const Page = () => {
                         customClass="mb-4"
                         handleChange={setUsername}
                         label="Username"
-                        placeholder="Masukan Username"
+                        placeholder="Fill Username"
                     />
                     <InputForm
                         customClass="mb-4"
                         handleChange={setPassword}
                         label="Password"
-                        placeholder="Masukan Password"
+                        placeholder="Fill Password"
                         type="password"
                     />
                     <Checkbox
@@ -64,7 +64,7 @@ const Page = () => {
                     <div className="flex flex-col gap-2 items-start">
                         {error && <p className="text-red-500">{error}</p>}
                         <Button type="submit">
-                            {loading ? "Logging in..." : "Login"}
+                            {loading ? "Signing in..." : "Sign In"}
                         </Button>
                     </div>
                 </form>
