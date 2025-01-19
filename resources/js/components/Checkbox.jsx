@@ -5,7 +5,7 @@ const Checkbox = ({ label, handleChange, customClass, name }) => {
         <div
             className={className(
                 "flex flex-row items-center gap-2",
-                customClass
+                customClass,
             )}
         >
             <input
@@ -13,7 +13,7 @@ const Checkbox = ({ label, handleChange, customClass, name }) => {
                 name={name}
                 onChange={(e) => handleChange(e.target.value)}
             />
-            <label className="block text-gray-700 text-sm">{label}</label>
+            <label className="block text-sm text-gray-700">{label}</label>
         </div>
     );
 };

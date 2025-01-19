@@ -20,7 +20,7 @@ const Sidebar = ({ sidebarLinks }) => {
             const result = await swalFireConfirm(
                 "Yakin ingin keluar?",
                 "",
-                "warning"
+                "warning",
             );
 
             if (result.isConfirmed) {
@@ -33,8 +33,8 @@ const Sidebar = ({ sidebarLinks }) => {
     };
 
     return (
-        <div className="bg-costumeBlue flex flex-col items-center w-full h-full transition-all pt-4 pb-2 rounded-none">
-            <div className="flex flex-col items-start gap-3 justify-start">
+        <div className="flex h-full w-full flex-col items-center rounded-none bg-costumeBlue pb-2 pt-4 transition-all">
+            <div className="flex flex-col items-start justify-start gap-3">
                 {sidebarLinks.map((link, index) => {
                     return (
                         <div key={index}>
@@ -47,7 +47,7 @@ const Sidebar = ({ sidebarLinks }) => {
                                         url === link.path
                                             ? "bg-blue-500 text-white"
                                             : "text-white",
-                                        linkClass(link.disabled)
+                                        linkClass(link.disabled),
                                     )}
                                 >
                                     <span>{link.icon}</span>
@@ -59,17 +59,17 @@ const Sidebar = ({ sidebarLinks }) => {
                                             setOpenItems(
                                                 openItems === index
                                                     ? null
-                                                    : index
+                                                    : index,
                                             )
                                         }
-                                        className="text-white hover:bg-system-primary rounded-lg transition duration-300 flex flex-row gap-x-5 items-center w-full py-3 px-6"
+                                        className="hover:bg-system-primary flex w-full flex-row items-center gap-x-5 rounded-lg px-6 py-3 text-white transition duration-300"
                                     >
                                         <CaretDown
                                             className={`${
                                                 openItems === index
                                                     ? "rotate-180"
                                                     : "rotate-0"
-                                            } transition-transform duration-300 w-4 h-4`}
+                                            } h-4 w-4 transition-transform duration-300`}
                                         />
                                     </button>
                                 ) : null}
@@ -88,9 +88,9 @@ const Sidebar = ({ sidebarLinks }) => {
                                                             ? "bg-blue-500 text-white"
                                                             : "text-white",
                                                         linkClass(
-                                                            subLink.disabled
+                                                            subLink.disabled,
                                                         ),
-                                                        "pl-10"
+                                                        "pl-10",
                                                     )}
                                                 >
                                                     <span className="block">
@@ -110,7 +110,7 @@ const Sidebar = ({ sidebarLinks }) => {
                     <button
                         onClick={() => handleLogout()}
                         type="button"
-                        className="flex items-center gap-2 text-white hover:bg-blue-400 hover:no-underline active:bg-indigo-600 rounded-lg text-base px-3 py-2 font-bold w-full"
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-base font-bold text-white hover:bg-blue-400 hover:no-underline active:bg-indigo-600"
                     >
                         <span>
                             <SignOut size={24} color="#ffffff" weight="bold" />

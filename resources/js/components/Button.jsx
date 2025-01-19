@@ -6,7 +6,7 @@ const Button = ({ onClick, type, children, theme = "default" }) => {
     return (
         <button
             onClick={onClick}
-            className={`${themeClassName[theme]} font-bold py-2 px-4 rounded-lg w-full focus:outline-none focus:shadow-outline`}
+            className={`${themeClassName[theme]} focus:shadow-outline w-full rounded-lg px-4 py-2 font-bold focus:outline-none`}
             type={type}
         >
             {children}

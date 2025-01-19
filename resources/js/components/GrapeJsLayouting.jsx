@@ -17,7 +17,7 @@ const GrapeJsLayouting = () => {
             });
         }
     }, []);
-    return <div className="w-full h-screen" id="gjs"></div>;
+    return <div className="h-screen w-full" id="gjs"></div>;
 };
 
 export default GrapeJsLayouting;

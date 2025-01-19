@@ -25,22 +25,22 @@ const Page = () => {
                 onError: (errors) => {
                     setLoading(false);
                     setError(
-                        errors.username || errors.password || "Login failed"
+                        errors.username || errors.password || "Login failed",
                     );
                 },
-            }
+            },
         );
     };
 
     return (
-        <div className="grid grid-cols-2 h-screen w-full gap-2">
-            <div className="flex flex-col justify-center items-center col-span-2">
-                <h1 className="text-costumeBlue text-md sm:text-4xl font-bold">
+        <div className="grid h-screen w-full grid-cols-2 gap-2">
+            <div className="col-span-2 flex flex-col items-center justify-center">
+                <h1 className="text-md font-bold text-costumeBlue sm:text-4xl">
                     Login Admin
                 </h1>
                 <br />
                 <form
-                    className="w-[350px] sm:w-full max-w-md xs:max-w-xs mx-auto relative"
+                    className="xs:max-w-xs relative mx-auto w-[350px] max-w-md sm:w-full"
                     onSubmit={handleLogin}
                 >
                     <InputForm
@@ -61,7 +61,7 @@ const Page = () => {
                         label="Remember Me"
                         name="remember"
                     />
-                    <div className="flex flex-col gap-2 items-start">
+                    <div className="flex flex-col items-start gap-2">
                         {error && <p className="text-red-500">{error}</p>}
                         <Button type="submit">
                             {loading ? "Signing in..." : "Sign In"}
