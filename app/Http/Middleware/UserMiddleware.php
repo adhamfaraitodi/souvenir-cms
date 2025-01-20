@@ -11,8 +11,8 @@ class UserMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::check()){
-            if(Auth::user()->role==='user'){
+        if(Auth::guard('web')->check()){
+            if(Auth::guard('web')->user()->role==='user'){
                 return $next($request);
             }
             abort(403, 'Unauthorized');
