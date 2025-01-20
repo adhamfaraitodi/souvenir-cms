@@ -25,21 +25,30 @@ Route::post('admin/login', [AdminAuthController::class, 'login']);
 Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name('admin.logout');
 
 // User routes
-Route::name('user.')->group(function () {
-    Route::get('/', [UserDashboardController::class, 'Index'])->name('home')->middleware('is_user');
-    Route::resource('orders', UserOrderController::class)->middleware('is_user');
-    Route::resource('controls', UserControlController::class)->middleware('is_user');
-    Route::resource('landing-page', UserLandingPageController::class)->middleware('is_user');
-    Route::resource('payments', UserPaymentController::class)->middleware('is_user');
-    Route::resource('products', UserProductController::class)->middleware('is_user');
+Route::name('user.')->middleware('is_user')->group(function () {
+    Route::get('/', [UserDashboardController::class, 'Index'])->name('home');
+    Route::resource('orders', UserOrderController::class);
+    Route::resource('controls', UserControlController::class);
+    Route::resource('landing-page', UserLandingPageController::class);
+    Route::resource('payments', UserPaymentController::class);
+    Route::resource('products', UserProductController::class);
 });
 
 // Admin routes
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminDashboardController::class, 'Index'])->name('home')->middleware('is_admin');
-    Route::resource('orders', AdminOrderController::class)->middleware('is_admin');
-    Route::resource('manages', AdminManageController::class)->middleware('is_admin');
-    Route::resource('landing-page', AdminLandingPageController::class)->middleware('is_admin');
-    Route::resource('products', AdminProductController::class)->middleware('is_admin');
-    Route::resource('users', AdminUserManageController::class)->middleware('is_admin');
+// Route::prefix('admin')->name('admin.')->group(function () {
+//     Route::get('/', [AdminDashboardController::class, 'Index'])->name('home')->middleware('is_admin');
+//     Route::resource('orders', AdminOrderController::class)->middleware('is_admin');
+//     Route::resource('manages', AdminManageController::class)->middleware('is_admin');
+//     Route::resource('landing-page', AdminLandingPageController::class)->middleware('is_admin');
+//     Route::resource('products', AdminProductController::class)->middleware('is_admin');
+//     Route::resource('users', AdminUserManageController::class)->middleware('is_admin');
+// });
+
+Route::prefix('admin')->name('admin.')->middleware('is_admin')->group(function () {
+    Route::get('/', [AdminDashboardController::class, 'Index'])->name('home');
+    Route::resource('orders', AdminOrderController::class);
+    Route::resource('manages', AdminManageController::class);
+    Route::resource('landing-page', AdminLandingPageController::class);
+    Route::resource('products', AdminProductController::class);
+    Route::resource('users', AdminUserManageController::class);
 });
