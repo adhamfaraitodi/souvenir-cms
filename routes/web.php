@@ -17,11 +17,14 @@ use App\Http\Controllers\Admin\LandingPageController as AdminLandingPageControll
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserManageController as AdminUserManageController;
 //login
-Route::get('login', [UserAuthController::class, 'showLoginForm'])->name('login');
-Route::post('login', [UserAuthController::class, 'login']);
-Route::post('logout', [UserAuthController::class, 'logout'])->name('logout');
-Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [AdminAuthController::class, 'login']);
+Route::middleware('guest')->group(function () {
+    Route::get('login', [UserAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [UserAuthController::class, 'login']);
+    Route::post('logout', [UserAuthController::class, 'logout'])->name('logout');
+    Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('admin/login', [AdminAuthController::class, 'login']);
+});
+
 Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name('admin.logout');
 
 // User routes
