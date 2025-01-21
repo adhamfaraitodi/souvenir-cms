@@ -1,72 +1,67 @@
-import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { useEffect } from "react";
+import { useForm } from "@inertiajs/react";
 import InputForm from "../../../components/InputForm";
+import Button from "../../../components/Button";
+import Checkbox from "../../../components/Checkbox";
 
 const Page = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const { data, setData, post, errors, reset, processing } = useForm({
+        username: "",
+        password: "",
+        remember: false,
+    });
+
+    useEffect(() => {
+        return () => {
+            reset("password");
+        };
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        router.post(
-            "/login",
-            { username, password },
-            {
-                onSuccess: () => {
-                    setLoading(false);
-                },
-                onError: (errors) => {
-                    setLoading(false);
-                    setError(
-                        errors.username || errors.password || "Login failed"
-                    );
-                },
-            }
-        );
+        post("/login");
     };
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 h-screen w-full gap-2">
-            <div className="hidden sm:flex items-center justify-center h-screen bg-costumeBlue">
-                {/* <img className="blox mx-auto w-56" src={logo} alt="" /> */}
-            </div>
-
-            <div className="flex flex-col justify-center items-center col-span-2">
-                {/* <img className="sm:hidden w-28" src={logoMobile} alt="" /> */}
-                <h1 className="text-costumeBlue text-md sm:text-4xl font-bold">
+        <div className="grid h-screen w-full grid-cols-2 gap-2">
+            <div className="col-span-2 flex flex-col items-center justify-center">
+                <h1 className="text-md font-bold text-costumeBlue sm:text-4xl">
                     Login User
                 </h1>
                 <br />
                 <form
-                    className="w-[350px] sm:w-full max-w-md xs:max-w-xs mx-auto relative"
+                    className="xs:max-w-xs relative mx-auto w-[350px] max-w-md sm:w-full"
                     onSubmit={handleLogin}
                 >
                     <InputForm
-                        className="mb-4"
-                        handleChange={setUsername}
+                        customClass="mb-4"
+                        handleChange={(e) => setData({ ...data, username: e })}
                         label="Username"
-                        placeholder="Masukan Username"
+                        placeholder="Fill Username"
                     />
                     <InputForm
-                        className="mb-4"
-                        handleChange={setPassword}
+                        customClass="mb-4"
+                        handleChange={(e) => setData({ ...data, password: e })}
                         label="Password"
-                        placeholder="Masukan Password"
+                        placeholder="Fill Password"
                         type="password"
                     />
-                    <div className="flex flex-col gap-2 items-start">
-                        {error && <p className="text-red-500">{error}</p>}
-                        <button
-                            className="bg-costumeBlue text-white font-bold py-2 px-4 rounded-lg w-full focus:outline-none focus:shadow-outline"
-                            type="submit"
-                        >
-                            {loading ? "Logging in..." : "Login"}
-                        </button>
+                    <Checkbox
+                        customClass="mb-4"
+                        label="Remember Me"
+                        handleChange={(e) => setData({ ...data, remember: e })}
+                    />
+                    <div className="flex flex-col items-start gap-2">
+                        {Object.keys(errors).length > 0 && (
+                            <div className="w-full text-red-500">
+                                {Object.values(errors).map((error, index) => (
+                                    <p key={index}>{error}</p>
+                                ))}
+                            </div>
+                        )}
+                        <Button type="submit">
+                            {processing ? "Signing in..." : "Sign In"}
+                        </Button>
                     </div>
                 </form>
             </div>

@@ -6,7 +6,7 @@ const InputForm = ({
     handleChange,
     placeholder = label,
     type = "text",
-    className,
+    customClass,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -15,13 +15,13 @@ const InputForm = ({
         setShowPassword(!showPassword);
     };
     return (
-        <div className={className}>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+        <div className={customClass}>
+            <label className="mb-2 block text-sm font-bold text-gray-700">
                 {label}
             </label>
             <div className="relative">
                 <input
-                    className="appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
+                    className="focus:shadow-outline mt-2 w-full appearance-none rounded-lg border px-3 py-2 leading-tight text-gray-700 focus:outline-none"
                     type={
                         type === "password"
                             ? showPassword
@@ -34,7 +34,7 @@ const InputForm = ({
                 />
                 {type === "password" ? (
                     <button
-                        className="absolute top-3 end-2"
+                        className="absolute end-2 top-3"
                         onClick={(e) => togglePasswordVisibility(e)}
                     >
                         <Eye size={28} color="#8A8A8A" />
