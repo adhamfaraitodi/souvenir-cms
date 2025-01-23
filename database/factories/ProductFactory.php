@@ -4,14 +4,17 @@ namespace Database\Factories;
 
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Product;
 
 class ProductFactory extends Factory
 {
     protected $model = Product::class;
-    public function definition()
+    public function definition():array
     {
+        $type = $this->faker->randomElement(['retail', 'custom']);
+        $for = ($type === 'retail') ? 'all' : User::inRandomOrder()->first()->id;
         return [
             'admin_id' => Admin::inRandomOrder()->first()->id,
             'category_id' => Category::inRandomOrder()->first()->id,
@@ -20,7 +23,8 @@ class ProductFactory extends Factory
             'product_image' => 'storage/photos/' . $this->faker->uuid . '.svg',
             'weight' => $this->faker->numberBetween(1, 1000),
             'package' => $this->faker->randomElement(['Box Kayu', 'Box Suede', 'Box Vynil','Box Bludru','Box Karton']),
-            'type' => $this->faker->randomElement(['retail', 'custom']),
+            'type' => $type,
+            'for' => $for,
             'stock' => $this->faker->numberBetween(0, 100),
             'specification' => $this->faker->paragraph,
             'brand' => $this->faker->word,

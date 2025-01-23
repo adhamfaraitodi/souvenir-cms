@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('package', ['Box Kayu', 'Box Suede', 'Box Vynil', 'Box Bludru', 'Box Karton']);
             $table->enum('type', ['retail', 'custom']);
             $table->integer('stock');
+            $table->string('for');
             $table->text('specification');
             $table->string('brand', 30);
             $table->timestamps();
