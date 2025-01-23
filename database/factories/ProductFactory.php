@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Admin;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Product;
 
@@ -11,8 +13,8 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'admin_id' => \App\Models\Admin::factory(),
-            'category_id' => \App\Models\Category::factory(),
+            'admin_id' => Admin::inRandomOrder()->first()->id,
+            'category_id' => Category::inRandomOrder()->first()->id,
             'name' => $this->faker->word,
             'price' => $this->faker->randomFloat(2, 1, 150),
             'product_image' => 'storage/photos/' . $this->faker->uuid . '.svg',

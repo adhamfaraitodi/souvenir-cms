@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -11,13 +12,14 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'admin_id' => \App\Models\Admin::factory(),
+            'admin_id' => Admin::inRandomOrder()->first()->id,
             'username' => $this->faker->userName,
             'password' => bcrypt('password'),
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->numerify('+62###########'),
             'role' => $this->faker->randomElement(['user']),
+            'remember_token' =>'null',
             'created_at' => now(),
             'updated_at' => now(),
             ];
