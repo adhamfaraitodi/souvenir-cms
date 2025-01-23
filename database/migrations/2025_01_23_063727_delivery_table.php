@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('deliveries', function (Blueprint $table) {
-            $table->id('delivery_id');
-            $table->enum('name',['JNE','JNT']);
-            $table->decimal('shipping_cost',15,0);
-            $table->date('shipping_date');
-            $table->enum('box',['yes','no']);
-            $table->string('tracking_code',15);
+            $table->id();
+            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
+            $table->string('courier_name', 50);
+            $table->string('tracking_number', 100);
+            $table->enum('shipping_status', ['shipped', 'delivered']);
             $table->timestamps();
         });
     }

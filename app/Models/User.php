@@ -12,21 +12,33 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
     protected $table = 'users';
-    protected $primaryKey = 'user_id';
     protected $fillable = [
+        'admin_id',
         'username',
         'password',
         'name',
         'email',
         'phone',
         'role',
+        'created_at',
+        'updated_at',
+        'remember_token'
+
     ];
     protected $hidden = [
-        'password',
+        'password', 'remember_token'
     ];
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');
+    }
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'user_id');
     }
     public function getAuthIdentifierName()
     {

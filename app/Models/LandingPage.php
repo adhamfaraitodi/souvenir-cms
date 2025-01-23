@@ -9,11 +9,9 @@ class LandingPage extends Model
 {
     use HasFactory;
     protected $table = 'landing_pages';
-    protected $primaryKey = 'landingpage_id';
     protected $fillable = [
         'title',
-        'description',
-        'landingpage_url',
+        'landing_page_url',
         'html_url',
         'css_url',
         'created_at',
@@ -22,6 +20,6 @@ class LandingPage extends Model
 
     public function orders()
     {
-        return $this->hasOne(Order::class, 'landingpage_id');
+        return $this->hasOne(Order::class, 'landing_page_id');
     }
 }

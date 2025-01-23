@@ -9,37 +9,42 @@ class Order extends Model
 {
     use HasFactory;
     protected $table = 'orders';
-    protected $primaryKey = 'order_id';
     protected $fillable = [
         'user_id',
-        'landingpage_id',
-        'delivery_id',
+        'product_id',
+        'landing_page_id',
         'company_profile',
-        'description',
-        'payment_status',
-        'payment_date',
+        'note',
         'order_status',
+        'qty',
+        'product_price',
+        'delivery_fee',
+        'total_price',
         'created_at',
         'updated_at',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function landingPage()
-    {
-        return $this->belongsTo(LandingPage::class, 'landingpage_id');
-    }
-
-    public function delivery()
-    {
-        return $this->belongsTo(Delivery::class, 'delivery_id');
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function products()
     {
-        return $this->hasMany(ProductOrder::class, 'order_id');
+        return $this->belongsToMany(Product::class,'product_id');
+    }
+
+    public function landingpage()
+    {
+        return $this->belongsTo(Landingpage::class,'landing_page_id');
+    }
+
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class,'delivery_id');
+    }
+    public function payment()
+    {
+        return $this->hasOne(Payment::class,'payment_id');
     }
 }

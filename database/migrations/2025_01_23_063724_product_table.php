@@ -12,18 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id('product_id');
-            $table->unsignedBigInteger('admin_id');
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('product_detail_id');
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained('categories')->noActionOnDelete();
             $table->string('name', 30);
             $table->decimal('price', 15, 2);
+            $table->string('product_image', 255);
+            $table->integer('weight');
+            $table->enum('package', ['Box Kayu', 'Box Suede', 'Box Vynil', 'Box Bludru', 'Box Karton']);
+            $table->enum('type', ['retail', 'custom']);
             $table->integer('stock');
+            $table->text('specification');
+            $table->string('brand', 30);
             $table->timestamps();
-
-            $table->foreign('admin_id')->references('admin_id')->on('admins')->onDelete('no action');
-            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('no action');
-            $table->foreign('product_detail_id')->references('product_detail_id')->on('product_details')->onDelete('no action');
         });
     }
 

@@ -9,6 +9,14 @@ class AdminSeeder extends Seeder
 {
     public function run()
     {
-        Admin::factory()->count(10)->create();
+        Admin::create([
+            'name' => 'Admin',
+            'username' => 'admin',
+            'password' => bcrypt('password'),
+            'email' => 'admin@example.com',
+            'role' => 'admin',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

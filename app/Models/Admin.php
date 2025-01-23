@@ -12,27 +12,29 @@ class Admin extends Authenticatable
     use HasFactory;
     use Notifiable;
     protected $table = 'admins';
-    protected $primaryKey = 'admin_id';
     protected $fillable = [
         'username',
         'password',
+        'name',
         'email',
-        'role'
+        'role',
+        'created_at',
+        'updated_at',
+        'remember_token'
     ];
     protected $hidden = [
-        'password',
+        'password','remember_token'
     ];
-        /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'password' => 'hashed',
     ];
     public function products()
     {
         return $this->hasMany(Product::class,'admin_id');
+    }
+    public function users()
+    {
+        return $this->hasMany(User::class,'admin_id');
     }
     public function getAuthIdentifierName()
     {

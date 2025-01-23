@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('landing_pages', function (Blueprint $table) {
-            $table->id('landingpage_id');
-            $table->string('tittle',255);
-            $table->text('description');
-            $table->string('landingpage_url',255);
-            $table->string('html_url',255);
-            $table->string('css_url',255);
+            $table->id();
+            $table->string('title', 255);
+            $table->string('landing_page_url', 255);
+            $table->string('html_url', 255);
+            $table->string('css_url', 255);
             $table->timestamps();
         });
     }

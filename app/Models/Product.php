@@ -9,33 +9,32 @@ class Product extends Model
 {
     use HasFactory;
     protected $table = 'products';
-    protected $primaryKey = 'product_id';
     protected $fillable = [
-        'name',
-        'price',
-        'stock',
         'admin_id',
         'category_id',
-        'product_detail_id',
+        'name',
+        'price',
+        'product_image',
+        'weight',
+        'package',
+        'type',
+        'for',
+        'stock',
+        'specification',
+        'brand',
+        'created_at',
+        'updated_at',
     ];
-
     public function admin()
     {
         return $this->belongsTo(Admin::class, 'admin_id');
     }
-
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-
-    public function productDetail()
-    {
-        return $this->belongsTo(ProductDetail::class, 'product_detail_id');
-    }
-
     public function orders()
     {
-        return $this->hasMany(ProductOrder::class, 'product_id');
+        return $this->hasOne(Order::class, 'product_id');
     }
 }
