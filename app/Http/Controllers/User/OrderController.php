@@ -16,12 +16,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $username = auth()->id();
-        $user = User::where('username', $username)->first();
-        if (!$user) {
-            return Inertia::render('User/Order/Index', ['orders' => []]);
-        }
-        $orders = Order::where('user_id', $user->id)->get();
+        $orders = Order::where('user_id', Auth::user()->id)->get();
         return Inertia::render('User/Order/Index', ['orders' => $orders]);
     }
     public function show(string $id) //order detail later will be changed route to orders/detail/{id}
@@ -36,11 +31,7 @@ class OrderController extends Controller
     {
         $product = Product::findOrFail($product_id);
         $orderCode = $this->generateUniqueOrderId();
-        $username = auth()->id();
-        $user = User::where('username', $username)->first();
-        if (!$user) {
-            abort(404, 'User not found.');
-        }
+        $user = User::where('id', Auth::user()->id)->first();
         $order = Order::create([
             'order_code' => $orderCode,
             'user_id' => $user->id,
