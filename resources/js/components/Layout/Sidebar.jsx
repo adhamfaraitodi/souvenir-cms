@@ -41,20 +41,41 @@ const Sidebar = ({ sidebarLinks }) => {
                     return (
                         <div key={index}>
                             <div className="flex">
-                                <Link
-                                    key={link.key}
-                                    href={link.path}
-                                    disabled={link.disabled}
-                                    className={classNames(
-                                        url === link.path
-                                            ? "bg-blue-500 text-white"
-                                            : "text-white",
-                                        linkClass(link.disabled),
-                                    )}
-                                >
-                                    <span>{link.icon}</span>
-                                    <span className="block">{link.label}</span>
-                                </Link>
+                                {link.disabled ? (
+                                    <div
+                                        key={link.key}
+                                        className={classNames(
+                                            url === link.path
+                                                ? "bg-blue-500 text-white"
+                                                : "text-white",
+                                            linkClass(link.disabled),
+                                        )}
+                                    >
+                                        <div className="flex items-center">
+                                            <span>{link.icon}</span>
+                                            <span className="ml-2 block">
+                                                {link.label}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Link
+                                        key={link.key}
+                                        href={link.path}
+                                        className={classNames(
+                                            url === link.path
+                                                ? "bg-blue-500 text-white"
+                                                : "text-white",
+                                            linkClass(link.disabled),
+                                        )}
+                                    >
+                                        <span>{link.icon}</span>
+                                        <span className="block">
+                                            {link.label}
+                                        </span>
+                                    </Link>
+                                )}
+
                                 {link.items ? (
                                     <button
                                         onClick={() =>
