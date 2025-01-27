@@ -32,13 +32,14 @@ class RajaOngkirController extends Controller
             $responseBody = json_decode($postResponse->getBody(), true);
             $shippingCost = $responseBody['data'][0]['cost'] ?? 0;
 
-            return Inertia::render('User/Order/Id/Add', [
-                'shippingCost' => $shippingCost,
+            return response()->json([
+                'shippingCost' => $shippingCost
             ]);
         } catch (\Exception $e) {
-            return Inertia::render('User/Order/Id/Add', [
-                'error' => $e->getMessage(),
-            ]);
+            return response()->json([
+                'error' => 'An unexpected error occurred',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
 }
