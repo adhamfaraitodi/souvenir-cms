@@ -43,6 +43,7 @@ function OrderDetails({ order, addresses, officeAddress }) {
                 <h2 className="text-lg font-bold mb-2">Order Details</h2>
                 <div className="flex justify-between items-center mb-2">
                     <span>Invoice: {order.order_code}</span>
+                    <span>Status: {order.order_status}</span>
                     <span>Date Order: {new Date().toLocaleDateString()}</span>
                 </div>
             </div>
