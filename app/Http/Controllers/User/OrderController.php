@@ -64,6 +64,7 @@ class OrderController extends Controller
             'order' => [
                 'id' => $order->order_id,
                 'order_code'=>$order->order_code,
+                'order_status'=>$order->order_status,
                 'product' => [
                     'id' => $order->product->product_id,
                     'name' => $order->product->name,

@@ -46,6 +46,7 @@ function OrderDetails({ order, addresses, officeAddress }) {
                 <h2 className="mb-2 text-lg font-bold">Order Details</h2>
                 <div className="mb-2 flex items-center justify-between">
                     <span>Invoice: {order.order_code}</span>
+                    <span>Status: {order.order_status}</span>
                     <span>Date Order: {new Date().toLocaleDateString()}</span>
                 </div>
             </div>
