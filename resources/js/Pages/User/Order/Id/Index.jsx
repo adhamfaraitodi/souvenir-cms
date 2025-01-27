@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
+import capitalize from "../../../../utils/capitalize";
 
 function OrderDetails({ order, addresses, officeAddress }) {
     const [quantity, setQuantity] = useState(1);
     const [selectedCourier, setSelectedCourier] = useState("jne");
-    const [selectedAddress, setSelectedAddress] = useState(addresses[0]?.city_id || "");
+    const [selectedAddress, setSelectedAddress] = useState(
+        addresses[0]?.city_id || "",
+    );
     const [shippingCost, setShippingCost] = useState(0);
     const [loading, setLoading] = useState(false);
 
@@ -39,25 +42,28 @@ function OrderDetails({ order, addresses, officeAddress }) {
 
     return (
         <div className="container mx-auto p-4">
-            <div className="border p-4 mb-4 rounded-lg shadow-md bg-white">
-                <h2 className="text-lg font-bold mb-2">Order Details</h2>
-                <div className="flex justify-between items-center mb-2">
+            <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
+                <h2 className="mb-2 text-lg font-bold">Order Details</h2>
+                <div className="mb-2 flex items-center justify-between">
                     <span>Invoice: {order.order_code}</span>
                     <span>Date Order: {new Date().toLocaleDateString()}</span>
                 </div>
             </div>
 
-            <div className="border p-4 mb-4 rounded-lg shadow-md bg-white">
-                <h3 className="text-lg font-bold mb-2">Product Details</h3>
+            <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
+                <h3 className="mb-2 text-lg font-bold">Product Details</h3>
                 <div className="flex gap-4">
                     <img
                         src={"/img/no-img.png"}
                         alt={order.product.name}
-                        className="w-24 h-24 object-cover"
+                        className="h-24 w-24 object-cover"
                     />
                     <div>
                         <p className="font-bold">{order.product.name}</p>
-                        <p>{order.product.type}: {order.product.category}</p>
+                        <p>
+                            {capitalize(order.product.type)}:{" "}
+                            {order.product.category}
+                        </p>
                         <p>Weight: {order.product.weight * quantity} gram</p>
                         <p>Package: {order.product.package}</p>
                         <p className="font-bold">
@@ -65,7 +71,9 @@ function OrderDetails({ order, addresses, officeAddress }) {
                         </p>
                         <div className="mt-2 flex items-center gap-2">
                             <button
-                                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                                onClick={() =>
+                                    setQuantity((prev) => Math.max(1, prev - 1))
+                                }
                                 disabled={quantity <= 1}
                                 className="border px-2 py-1 disabled:opacity-50"
                             >
@@ -75,10 +83,14 @@ function OrderDetails({ order, addresses, officeAddress }) {
                                 type="text"
                                 value={quantity}
                                 readOnly
-                                className="border w-12 text-center"
+                                className="w-12 border text-center"
                             />
                             <button
-                                onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
+                                onClick={() =>
+                                    setQuantity((prev) =>
+                                        Math.min(10, prev + 1),
+                                    )
+                                }
                                 disabled={quantity >= 10}
                                 className="border px-2 py-1 disabled:opacity-50"
                             >
@@ -88,17 +100,17 @@ function OrderDetails({ order, addresses, officeAddress }) {
                     </div>
                 </div>
                 <textarea
-                    className="border w-full mt-4 p-2"
+                    className="mt-4 w-full border p-2"
                     placeholder="Add a note"
                 />
             </div>
 
-            <div className="border p-4 mb-4 rounded-lg shadow-md bg-white">
-                <h3 className="text-lg font-bold mb-2">Delivery Details</h3>
+            <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
+                <h3 className="mb-2 text-lg font-bold">Delivery Details</h3>
                 <div className="mt-2">
-                    <label className="block mb-1 font-semibold">Courier:</label>
+                    <label className="mb-1 block font-semibold">Courier:</label>
                     <select
-                        className="border p-2 rounded w-full"
+                        className="w-full rounded border p-2"
                         value={selectedCourier}
                         onChange={(e) => setSelectedCourier(e.target.value)}
                     >
@@ -107,35 +119,42 @@ function OrderDetails({ order, addresses, officeAddress }) {
                     </select>
                 </div>
                 <div className="mt-4">
-                    <label className="block mb-1 font-semibold">Address:</label>
+                    <label className="mb-1 block font-semibold">Address:</label>
                     <select
-                        className="border p-2 rounded w-full"
+                        className="w-full rounded border p-2"
                         value={selectedAddress}
                         onChange={(e) => setSelectedAddress(e.target.value)}
                     >
                         {addresses.map((address) => (
                             <option key={address.id} value={address.city_id}>
-                                {address.street_address}, {address.city_name}, {address.province_name} - {address.postal_code}
+                                {address.street_address}, {address.city_name},{" "}
+                                {address.province_name} - {address.postal_code}
                             </option>
                         ))}
                     </select>
                 </div>
             </div>
 
-            <div className="border p-4 mb-4 rounded-lg shadow-md bg-white">
-                <h3 className="text-lg font-bold mb-2">Payment Details</h3>
+            <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
+                <h3 className="mb-2 text-lg font-bold">Payment Details</h3>
                 <div className="flex justify-between">
                     <span>Product Price</span>
                     <span>Rp. {productPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                     <span>Delivery Price</span>
-                    <span>{loading ? "Loading..." : `Rp. ${shippingCost.toLocaleString()}`}</span>
+                    <span>
+                        {loading
+                            ? "Loading..."
+                            : `Rp. ${shippingCost.toLocaleString()}`}
+                    </span>
                 </div>
-                <div className="flex justify-between font-bold mt-2">
+                <div className="mt-2 flex justify-between font-bold">
                     <span>Total</span>
                     <span>
-                        {loading ? "Loading..." : `Rp. ${totalCost.toLocaleString()}`}
+                        {loading
+                            ? "Loading..."
+                            : `Rp. ${totalCost.toLocaleString()}`}
                     </span>
                 </div>
             </div>
