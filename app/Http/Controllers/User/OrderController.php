@@ -92,6 +92,6 @@ class OrderController extends Controller
             ],
         ];
 
-        return Inertia::render('User/Order/Id/Add', $data);
+        return Inertia::render('User/Order/Id/Index', $data);
     }
 }

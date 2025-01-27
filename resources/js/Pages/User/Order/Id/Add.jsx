@@ -1,57 +1,44 @@
-import { useForm } from "@inertiajs/react";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
-import { usePage } from "@inertiajs/react";
 
 function OrderDetails({ order, addresses, officeAddress }) {
     const [quantity, setQuantity] = useState(1);
     const [selectedCourier, setSelectedCourier] = useState("jne");
     const [selectedAddress, setSelectedAddress] = useState(addresses[0]?.city_id || "");
-    const { shippingCost: initialShippingCost } = usePage().props;
-    const [shippingCost, setShippingCost] = useState(initialShippingCost || 0);
+    const [shippingCost, setShippingCost] = useState(0);
+    const [loading, setLoading] = useState(false);
 
-    const { data, setData, post, processing } = useForm({
-        origin: officeAddress.city_id,
-        destination: selectedAddress,
-        weight: order.product.weight * quantity,
-        courier: selectedCourier,
-        price: "lowest",
-    });
-    const fetchShippingCost = () => {
-        post("/api/check-ongkir", {
-            preserveState: true,
-            onSuccess: (response) => {
-                const newShippingCost = response.props?.shippingCost ?? 0;
-                setShippingCost(newShippingCost);
-            },
-            onError: () => {
-                setShippingCost(0);
-            },
-        });
+    const fetchShippingCost = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.post("/api/check-ongkir", {
+                origin: officeAddress.city_id,
+                destination: selectedAddress,
+                weight: order?.product?.weight * quantity || 0,
+                courier: selectedCourier,
+                price: "lowest",
+            });
+            setShippingCost(response.data.shippingCost || 0);
+        } catch (error) {
+            console.error("Error fetching shipping cost:", error);
+            setShippingCost(0);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    // Fetch shipping cost automatically when dependencies change
     useEffect(() => {
-        setData((prevData) => ({
-            ...prevData,
-            destination: selectedAddress,
-            weight: order.product.weight * quantity,
-            courier: selectedCourier,
-        }));
+        fetchShippingCost();
     }, [selectedAddress, quantity, selectedCourier]);
-    useEffect(() => {
-        setShippingCost(initialShippingCost);
-    }, [initialShippingCost]);
+
+    const productPrice = order?.product?.price || 0;
+    const totalCost = productPrice * quantity + shippingCost;
 
     return (
         <div className="container mx-auto p-4">
-            <div>
-                <h1>Order Details</h1>
-                <p>Shipping Cost: {shippingCost}</p>
-                <button onClick={fetchShippingCost} disabled={processing}>
-                    {processing ? "Calculating..." : "Calculate Shipping"}
-                </button>
-            </div>
-
             <div className="border p-4 mb-4 rounded-lg shadow-md bg-white">
                 <h2 className="text-lg font-bold mb-2">Order Details</h2>
                 <div className="flex justify-between items-center mb-2">
@@ -74,7 +61,7 @@ function OrderDetails({ order, addresses, officeAddress }) {
                         <p>Weight: {order.product.weight * quantity} gram</p>
                         <p>Package: {order.product.package}</p>
                         <p className="font-bold">
-                            Rp. {order.product.price.toLocaleString()}
+                            Rp. {productPrice.toLocaleString()}
                         </p>
                         <div className="mt-2 flex items-center gap-2">
                             <button
@@ -139,18 +126,16 @@ function OrderDetails({ order, addresses, officeAddress }) {
                 <h3 className="text-lg font-bold mb-2">Payment Details</h3>
                 <div className="flex justify-between">
                     <span>Product Price</span>
-                    <span>Rp. {order.product.price.toLocaleString()}</span>
+                    <span>Rp. {productPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                     <span>Delivery Price</span>
-                    <span>
-                        {processing ? "Loading..." : `Rp. ${shippingCost}`}
-                    </span>
+                    <span>{loading ? "Loading..." : `Rp. ${shippingCost.toLocaleString()}`}</span>
                 </div>
                 <div className="flex justify-between font-bold mt-2">
                     <span>Total</span>
                     <span>
-                        Rp. {processing ? "Loading..." : ((order.product.price * quantity) + (shippingCost || 0)).toLocaleString()}
+                        {loading ? "Loading..." : `Rp. ${totalCost.toLocaleString()}`}
                     </span>
                 </div>
             </div>
