@@ -19,9 +19,10 @@ class UserAuthController extends Controller
             'username' => ['required'],
             'password' => ['required'],
         ]);
-        if (Auth::guard('web')->attempt($credentials)) {
+        $remember = $request->has('remember');
+        if (Auth::guard('web')->attempt($credentials,$remember)) {
             $request->session()->regenerate();
-            return redirect()->route('user.home');
+            return redirect()->route('user.products.index');
         }
         return redirect("login")->withErrors(['username' => 'username or password is incorrect']);
     }

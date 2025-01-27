@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('transaction_id', 255);
             $table->string('transaction_status', 255);
             $table->enum('payment_type', ['credit_card', 'gopay', 'shopeepay', 'qris', 'cstore', 'bank_transfer', 'echannel']);
-            $table->decimal('gross_amount', 15, 2);
+            $table->bigInteger('gross_amount');
             $table->timestamp('transaction_time')->nullable();
             $table->timestamp('settlement_time')->nullable();
             $table->json('response_json')->nullable();

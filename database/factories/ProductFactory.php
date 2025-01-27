@@ -19,7 +19,7 @@ class ProductFactory extends Factory
             'admin_id' => Admin::inRandomOrder()->first()->id,
             'category_id' => Category::inRandomOrder()->first()->id,
             'name' => $this->faker->word,
-            'price' => $this->faker->randomFloat(2, 1, 150),
+            'price' => $this->faker->numberBetween(1000, 3000000),
             'product_image' => 'storage/photos/' . $this->faker->uuid . '.svg',
             'weight' => $this->faker->numberBetween(1, 1000),
             'package' => $this->faker->randomElement(['Box Kayu', 'Box Suede', 'Box Vynil','Box Bludru','Box Karton']),

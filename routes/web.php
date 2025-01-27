@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\UserAuthController;
+use App\Http\Controllers\RajaOngkirController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
@@ -26,27 +26,19 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name('admin.logout');
-
 // User routes
 Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/', [UserDashboardController::class, 'Index'])->name('home');
-    Route::resource('orders', UserOrderController::class);
+    Route::get('/orders/list',[UserOrderController::class,'index'])->name('orders.list');
+    Route::get('/orders/detail/{id}',[UserOrderController::class,'show'])->name('orders.detail');
+    Route::get('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
+    Route::get('/orders/{id}',[UserOrderController::class,'edit'])->name('orders.edit');
     Route::resource('controls', UserControlController::class);
     Route::resource('landing-page', UserLandingPageController::class);
     Route::resource('payments', UserPaymentController::class);
     Route::resource('products', UserProductController::class);
 });
-
-// Admin routes
-// Route::prefix('admin')->name('admin.')->group(function () {
-//     Route::get('/', [AdminDashboardController::class, 'Index'])->name('home')->middleware('is_admin');
-//     Route::resource('orders', AdminOrderController::class)->middleware('is_admin');
-//     Route::resource('manages', AdminManageController::class)->middleware('is_admin');
-//     Route::resource('landing-page', AdminLandingPageController::class)->middleware('is_admin');
-//     Route::resource('products', AdminProductController::class)->middleware('is_admin');
-//     Route::resource('users', AdminUserManageController::class)->middleware('is_admin');
-// });
-
+//Admin routes
 Route::prefix('admin')->name('admin.')->middleware('is_admin')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'Index'])->name('home');
     Route::resource('orders', AdminOrderController::class);

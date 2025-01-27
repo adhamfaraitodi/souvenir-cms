@@ -15,14 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->noActionOnDelete();
             $table->foreignId('product_id')->constrained('products')->noActionOnDelete();
-            $table->foreignId('landing_page_id')->constrained('landing_pages')->cascadeOnDelete();
-            $table->string('company_profile', 255);
+            $table->foreignId('landing_page_id')->nullable()->constrained('landing_pages')->nullOnDelete();
+            $table->string('order_code',15);
+            $table->string('company_profile', 255)->nullable();
             $table->text('note')->nullable();
             $table->enum('order_status', ['pending', 'in_production', 'shipped', 'completed', 'canceled']);
-            $table->integer('qty');
-            $table->decimal('product_price', 15, 2);
-            $table->decimal('delivery_fee', 15, 2);
-            $table->decimal('total_price', 15, 2);
+            $table->integer('qty')->nullable();
+            $table->bigInteger('product_price')->nullable();
+            $table->bigInteger('delivery_fee')->nullable();
+            $table->bigInteger('total_price')->nullable();
             $table->timestamps();
         });
 

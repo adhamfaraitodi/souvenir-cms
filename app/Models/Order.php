@@ -13,6 +13,7 @@ class Order extends Model
         'user_id',
         'product_id',
         'landing_page_id',
+        'order_code',
         'company_profile',
         'note',
         'order_status',
@@ -29,9 +30,9 @@ class Order extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
-    public function products()
+    public function product()
     {
-        return $this->belongsToMany(Product::class,'product_id');
+        return $this->belongsTo(Product::class,'product_id');
     }
 
     public function landingpage()

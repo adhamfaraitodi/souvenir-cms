@@ -3,26 +3,28 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\OfficeAddress;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::all();
+        $username = auth()->id();
+        $user = User::where('username', $username)->first();
+        if (!$user) {
+            return Inertia::render('User/Order/Index', ['orders' => []]);
+        }
+        $orders = Order::where('user_id', $user->id)->get();
         return Inertia::render('User/Order/Index', ['orders' => $orders]);
     }
-    public function create()
-    {
-        return Inertia::render('User/Order/Id/Add');
-    }
-    public function store(Request $request)
-    {
-
-    }
-    public function show(string $id)
+    public function show(string $id) //order detail later will be changed route to orders/detail/{id}
     {
         $order = Order::find($id);
         if (!$order) {
@@ -30,16 +32,75 @@ class OrderController extends Controller
         }
         return Inertia::render('User/Order/Id/Index', ['order' => $order]);
     }
-    public function edit(string $id)
+    public function create(Request $request,$product_id)
     {
-        //
+        $product = Product::findOrFail($product_id);
+        $orderCode = $this->generateUniqueOrderId();
+        $username = auth()->id();
+        $user = User::where('username', $username)->first();
+        if (!$user) {
+            abort(404, 'User not found.');
+        }
+        $order = Order::create([
+            'order_code' => $orderCode,
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'landing_page_id' => null,
+            'order_status'=>"pending",
+        ]);
+        return redirect()->route('user.orders.edit', $order->order_code);
     }
-    public function update(Request $request, string $id)
+    private function generateUniqueOrderId(): string
     {
-        //
+        do {
+            $orderCode = 'order-' . Str::random(8);
+        } while (Order::where('order_code', $orderCode)->exists());
+        return $orderCode;
     }
-    public function destroy(string $id)
+
+    public function edit(string $orderCode)
     {
-        //
+        $order = Order::where('order_code', $orderCode)
+            ->with('product', 'user.addresses')
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('orders.index')->with('error', 'Order not found.');
+        }
+        $addresses = $order->user->addresses;
+        $officeAddress = OfficeAddress::first();
+        $data = [
+            'order' => [
+                'id' => $order->order_id,
+                'order_code'=>$order->order_code,
+                'product' => [
+                    'id' => $order->product->product_id,
+                    'name' => $order->product->name,
+                    'type' => $order->product->type,
+                    'category' => $order->product->category->name,
+                    'price' => $order->product->price,
+                    'image' => $order->product->product_image,
+                    'weight' => $order->product->weight,
+                    'package' => $order->product->package,
+                ],
+            ],
+            'addresses' => $addresses->map(function ($address) {
+                return [
+                    'id' => $address->id,
+                    'user_id' => $address->user_id,
+                    'province_id' => $address->province_id,
+                    'province_name' => $address->province_name,
+                    'city_id' => $address->city_id,
+                    'city_name' => $address->city_name,
+                    'postal_code' => $address->postal_code,
+                    'street_address' => $address->street_address,
+                ];
+            }),
+            'officeAddress' =>[
+                'city_id' => $officeAddress->city_id,
+            ],
+        ];
+
+        return Inertia::render('User/Order/Id/Add', $data);
     }
 }

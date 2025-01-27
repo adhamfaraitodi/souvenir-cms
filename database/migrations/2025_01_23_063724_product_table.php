@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->noActionOnDelete();
             $table->string('name', 30);
-            $table->decimal('price', 15, 2);
+            $table->bigInteger('price');
             $table->string('product_image', 255);
             $table->integer('weight');
             $table->enum('package', ['Box Kayu', 'Box Suede', 'Box Vynil', 'Box Bludru', 'Box Karton']);

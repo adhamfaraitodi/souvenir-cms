@@ -17,7 +17,7 @@ const userMenus = [
     {
         key: "orders",
         label: "Orders",
-        path: "/orders",
+        path: "/orders/list",
         icon: <Bag size={24} weight="bold" />,
     },
     {

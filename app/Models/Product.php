@@ -33,7 +33,7 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-    public function orders()
+    public function order()
     {
         return $this->hasOne(Order::class, 'product_id');
     }

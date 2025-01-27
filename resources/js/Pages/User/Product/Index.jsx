@@ -1,11 +1,21 @@
 import { PlusCircle } from "@phosphor-icons/react";
+import { Link } from "@inertiajs/react";
 import ProductCard from "../../../components/Card/ProductCard";
 import Layout from "../../../components/Layout";
 import Title from "../../../components/Title";
 import { userMenus } from "../../../libs/menus";
 
-const Page = ({ products }) => {
-    // console.log(products);
+const Page = ({
+                  customProducts,
+                  retailProducts
+              }) => {
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(price);
+    };
     return (
         <>
             <div className="mb-5 sm:mb-10 md:mb-20">
@@ -13,17 +23,18 @@ const Page = ({ products }) => {
                     Your Custom Products
                 </Title>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 lg:gap-6">
-                    {products.slice(0, 8).map((item, index) => (
+                    {customProducts.map((item) => (
                         <ProductCard
+                            key={item.id}
                             title={item.name}
-                            subtitle={`Rp${item.price}`}
-                            key={index}
+                            subtitle={formatPrice(item.price)}
+                            link={`/products/${item.id}`}
                         />
                     ))}
                     <div className="flex h-full w-full items-center justify-center">
-                        <button>
+                        <Link href="/products/custom/create">
                             <PlusCircle className="size-24 transition duration-100 hover:scale-95 hover:text-costumeBlue md:size-32" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -32,11 +43,12 @@ const Page = ({ products }) => {
                     See Other Products
                 </Title>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 lg:gap-6">
-                    {products.slice(0, 8).map((item, index) => (
+                    {retailProducts.map((item) => (
                         <ProductCard
+                            key={item.id}
                             title={item.name}
-                            subtitle={`Rp${item.price}`}
-                            key={index}
+                            subtitle={formatPrice(item.price)}
+                            link={`/products/${item.id}`}
                         />
                     ))}
                 </div>

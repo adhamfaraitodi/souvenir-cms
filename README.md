@@ -9,6 +9,7 @@
 7. command for init Laravel storage : php artisan storage:link
 8. command for populate seed : php artisan db:seed
 9. command for checking route list : php artisan route:list
+10. command for installing guzzle : composer require guzzlehttp/guzzle
 
 
 ## SYSTEM REQUIREMENT

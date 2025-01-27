@@ -11,59 +11,20 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
-        return Inertia::render('User/Product/Index', ['products' => $products]);
+        $user = auth()->user();
+        return Inertia::render('User/Product/Index', [
+            'customProducts' => Product::where('type', 'custom')
+                ->where('for', $user->id)
+                ->get(),
+            'retailProducts' => Product::where('type', 'retail')->get(),
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $products = Product::find($id);
+        $products = Product::with('category')->find($id);
         if (!$products) {
             return redirect()->route('user.products.index')->with('error', 'Product not found.');
         }
         return Inertia::render('User/Product/Id/Index', ['product' => $products]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
