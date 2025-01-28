@@ -1,39 +1,92 @@
-import React from 'react';
+import React, { useState } from "react";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
-import {Link} from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
+import Title from "../../../../components/Title";
+import capitalize from "../../../../utils/capitalize";
+import QuantityChanger from "../../../../components/QuantityChanger";
+import Button from "../../../../components/Button";
 
-const ProductPage = ({ product }) => {
+const Page = ({ product }) => {
+    const [quantity, setQuantity] = useState(1);
     return (
-        <Layout menus={userMenus}>
-            <div className="flex justify-between items-start">
-                <div>
-                    <h1 className="text-2xl font-bold">{product.name}</h1>
-                    <p className="text-gray-500 mt-2">Category: {product.category.name}</p>
+        <div className="flex flex-col-reverse gap-10 md:flex-col md:gap-2">
+            <div className="flex items-start justify-end">
+                {/* <Link href={`/orders/create/${product.id}`}> */}
+                {/* <button
+                    className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:"
+                >
+                    Order now
+                </button> */}
+                <div className="w-full md:w-auto">
+                    <Button>Order now</Button>
                 </div>
-                <Link href={`/orders/create/${product.id}`}>
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Order now
-                    </button>
-                </Link>
+                {/* </Link> */}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-6">
-                <div>
-                    <img src='/img/no-img.png' alt={product.name} className="w-full h-auto" />
-                </div>
-                <div>
-                    <p>Weight: {product.weight} gram</p>
-                    <p className="mt-2">Price: Rp. {product.price.toLocaleString()}</p>
-                    <p className="mt-2">Package: {product.package}</p>
-                    <p className="mt-2">Type: {product.type}</p>
-                    <p className="mt-2">Stock: {product.stock}</p>
-                    <p className="mt-2">Specification: {product.specification}</p>
-                    <p className="mt-2">Brand: {product.brand}</p>
+            <div className="grid gap-4 md:grid-cols-3">
+                <img
+                    src="/img/no-img.png"
+                    alt={product.name}
+                    className="h-auto w-full md:col-span-1"
+                />
+
+                <div className="md:col-span-2">
+                    <div className="mb-6">
+                        <Title customClass="font-bold md:text-5xl mb-4">
+                            {capitalize(product.name)}
+                        </Title>
+                        <div className="mb-1 flex flex-row gap-4">
+                            <p className="text-gray-500">Category:</p>
+                            <p className="font-medium">
+                                {product.category.name}
+                            </p>
+                        </div>
+                        <div className="flex flex-row gap-4">
+                            <p className="text-gray-500">Weight:</p>
+                            <p className="font-medium">{product.weight} gram</p>
+                        </div>
+                    </div>
+                    <div className="mb-2">
+                        <p className="text-gray-500">Total</p>
+                        <p className="text-xl font-bold md:text-3xl">
+                            Rp{(product.price * quantity).toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="mb-10 flex flex-row items-center gap-4">
+                        <QuantityChanger
+                            quantity={quantity}
+                            setQuantity={setQuantity}
+                        />
+                        <div className="flex flex-row items-center gap-1">
+                            <p className="text-gray-500">Stock:</p>
+                            <p className="font-semibold">{product.stock}</p>
+                        </div>
+                    </div>
+                    <div className="mb-4 border-b border-gray-300 pb-4">
+                        <div className="mb-1 flex flex-row gap-4">
+                            <p className="text-gray-500">Package:</p>
+                            <p className="font-medium">{product.package}</p>
+                        </div>
+                        <div className="mb-1 flex flex-row gap-4">
+                            <p className="text-gray-500">Type:</p>
+                            <p className="font-medium">{product.type}</p>
+                        </div>
+                        <div className="flex flex-row gap-4">
+                            <p className="text-gray-500">Brand:</p>
+                            <p className="font-medium">{product.brand}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p className="mb-2 font-bold">Specifications</p>
+                        <p className="">{product.specification}</p>
+                    </div>
                 </div>
             </div>
-        </Layout>
+        </div>
     );
 };
 
-export default ProductPage;
+Page.layout = (page) => <Layout children={page} menus={userMenus} />;
+
+export default Page;

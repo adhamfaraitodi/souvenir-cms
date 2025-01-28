@@ -41,9 +41,9 @@ export function swalFireConfirm(title, text, icon) {
         confirmButtonText: "Ya",
         customClass: {
             cancelButton:
-                "bg-costumeBlue text-white rounded-lg p-3 hover:brightness-75 transition-all ease-linear w-1/4",
+                "bg-blue-600 text-white rounded-lg p-3 hover:brightness-75 transition-all ease-linear w-1/4",
             confirmButton:
-                "bg-gray-200 text-costumeBlue rounded-lg p-3 hover:brightness-75 transition-all ease-linear w-1/4",
+                "bg-gray-200 text-blue-600 rounded-lg p-3 hover:brightness-75 transition-all ease-linear w-1/4",
             actions: "flex flex-row gap-12 justify-center w-full",
             popup: "rounded-lg",
         },

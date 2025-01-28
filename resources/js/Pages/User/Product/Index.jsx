@@ -5,21 +5,18 @@ import Layout from "../../../components/Layout";
 import Title from "../../../components/Title";
 import { userMenus } from "../../../libs/menus";
 
-const Page = ({
-                  customProducts,
-                  retailProducts
-              }) => {
+const Page = ({ customProducts, retailProducts }) => {
     const formatPrice = (price) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
             minimumFractionDigits: 0,
         }).format(price);
     };
     return (
         <>
             <div className="mb-5 sm:mb-10 md:mb-20">
-                <Title customClass="md:mb-8 sm:mb-6 mb-4">
+                <Title customClass="md:mb-8 sm:mb-6 mb-4 font-semibold">
                     Your Custom Products
                 </Title>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 lg:gap-6">
@@ -33,13 +30,16 @@ const Page = ({
                     ))}
                     <div className="flex h-full w-full items-center justify-center">
                         <Link href="/products/custom/create">
-                            <PlusCircle className="size-24 transition duration-100 hover:scale-95 hover:text-costumeBlue md:size-32" />
+                            <PlusCircle className="size-24 transition duration-100 hover:scale-95 hover:text-blue-600 md:size-32" />
                         </Link>
                     </div>
                 </div>
             </div>
             <div className="mb-10">
-                <Title customClass="md:mb-8 sm:mb-6 mb-4" level="h2">
+                <Title
+                    customClass="md:mb-8 sm:mb-6 mb-4 font-semibold"
+                    level="h2"
+                >
                     See Other Products
                 </Title>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 lg:gap-6">

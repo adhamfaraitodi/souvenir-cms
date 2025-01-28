@@ -3,6 +3,7 @@ import axios from "axios";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
 import capitalize from "../../../../utils/capitalize";
+import QuantityChanger from "../../../../components/QuantityChanger";
 
 function OrderDetails({ order, addresses, officeAddress }) {
     const [quantity, setQuantity] = useState(1);
@@ -44,10 +45,32 @@ function OrderDetails({ order, addresses, officeAddress }) {
         <div className="container mx-auto p-4">
             <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
                 <h2 className="mb-2 text-lg font-bold">Order Details</h2>
-                <div className="mb-2 flex items-center justify-between">
-                    <span>Invoice: {order.order_code}</span>
-                    <span>Status: {order.order_status}</span>
-                    <span>Date Order: {new Date().toLocaleDateString()}</span>
+
+                <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2">
+                        <p className="text-gray-500">Invoice:</p>
+                        <p className="font-medium">{order.order_code}</p>
+                    </div>
+                    <div className="flex flex-row gap-2">
+                        <p className="text-gray-500">Date Order:</p>
+                        <p className="font-medium">
+                            {new Date().toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div className="flex flex-row items-center gap-2">
+                        <p className="text-gray-500">Status:</p>
+                        <p
+                            className={`inline w-fit rounded-full px-3.5 py-[1px] text-center leading-tight ${
+                                order.order_status === "completed"
+                                    ? "bg-green-100 text-green-700"
+                                    : order.order_status === "pending"
+                                      ? "bg-red-100 text-red-700"
+                                      : "bg-blue-100 text-blue-700"
+                            }`}
+                        >
+                            {order.order_status}
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -70,34 +93,11 @@ function OrderDetails({ order, addresses, officeAddress }) {
                         <p className="font-bold">
                             Rp. {productPrice.toLocaleString()}
                         </p>
-                        <div className="mt-2 flex items-center gap-2">
-                            <button
-                                onClick={() =>
-                                    setQuantity((prev) => Math.max(1, prev - 1))
-                                }
-                                disabled={quantity <= 1}
-                                className="border px-2 py-1 disabled:opacity-50"
-                            >
-                                -
-                            </button>
-                            <input
-                                type="text"
-                                value={quantity}
-                                readOnly
-                                className="w-12 border text-center"
-                            />
-                            <button
-                                onClick={() =>
-                                    setQuantity((prev) =>
-                                        Math.min(10, prev + 1),
-                                    )
-                                }
-                                disabled={quantity >= 10}
-                                className="border px-2 py-1 disabled:opacity-50"
-                            >
-                                +
-                            </button>
-                        </div>
+                        <QuantityChanger
+                            quantity={quantity}
+                            setQuantity={setQuantity}
+                            customClass="mt-2"
+                        />
                     </div>
                 </div>
                 <textarea

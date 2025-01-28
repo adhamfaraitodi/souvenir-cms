@@ -25,7 +25,7 @@ const Page = () => {
     return (
         <div className="grid h-screen w-full grid-cols-2 gap-2">
             <div className="col-span-2 flex flex-col items-center justify-center">
-                <h1 className="text-md font-bold text-costumeBlue sm:text-4xl">
+                <h1 className="text-md font-bold text-blue-600 sm:text-4xl">
                     Login Admin
                 </h1>
                 <br />

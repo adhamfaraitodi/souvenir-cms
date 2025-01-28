@@ -35,7 +35,7 @@ const Sidebar = ({ sidebarLinks }) => {
     };
 
     return (
-        <div className="flex h-full w-full flex-col items-center rounded-none bg-costumeBlue pb-2 pt-4 transition-all">
+        <div className="flex h-full w-full flex-col items-center rounded-none bg-blue-600 pb-2 pt-4 transition-all">
             <div className="flex flex-col items-start justify-start gap-3">
                 {sidebarLinks.map((link, index) => {
                     return (

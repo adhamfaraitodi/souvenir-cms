@@ -10,15 +10,7 @@ export default {
         "./resources/**/*.jsx",
     ],
     theme: {
-        extend: {
-            fontFamily: {
-                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
-            },
-            colors: {
-                costumeBlue: "rgba(97, 72, 255, 1)",
-                lightBlue: "#EBF3FC",
-            },
-        },
+        extend: {},
     },
     plugins: [],
 };

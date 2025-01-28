@@ -28,7 +28,7 @@ const Layout = ({ children, menus }) => {
                 )}
 
                 {/* Mini Sidebar - Always visible on mobile */}
-                <div className="fixed z-20 flex h-screen w-16 flex-col items-center bg-costumeBlue pt-4 md:hidden">
+                <div className="fixed z-20 flex h-screen w-16 flex-col items-center bg-blue-600 pt-4 md:hidden">
                     <button
                         onClick={() => setIsOpen(!isOpen)}
                         className="rounded-lg p-2 text-white"
