@@ -15,9 +15,7 @@ const getOrderStatusClass = (status) => {
     return orderStatusClasses[status] || orderStatusClasses.default;
 };
 
-const Page = () => {
-    const { orders } = usePage().props;
-
+const Page = ({ orders }) => {
     return (
         <div className="p-6">
             <h1 className="mb-4 text-2xl font-bold">Order List</h1>
@@ -27,7 +25,7 @@ const Page = () => {
                         key={order.id}
                         className="rounded-lg border p-4 shadow-md"
                     >
-                        <div className="mb-2 flex flex-col justify-between md:flex-row md:items-center">
+                        <div className="flex flex-col justify-between md:flex-row md:items-center">
                             <div>
                                 <div className="text-sm text-gray-500">
                                     {new Date(
