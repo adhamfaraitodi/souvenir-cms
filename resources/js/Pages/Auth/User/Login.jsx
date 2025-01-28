@@ -34,20 +34,20 @@ const Page = () => {
                     onSubmit={handleLogin}
                 >
                     <InputForm
-                        customClass="mb-4"
+                        className="mb-4"
                         handleChange={(e) => setData({ ...data, username: e })}
                         label="Username"
                         placeholder="Fill Username"
                     />
                     <InputForm
-                        customClass="mb-4"
+                        className="mb-4"
                         handleChange={(e) => setData({ ...data, password: e })}
                         label="Password"
                         placeholder="Fill Password"
                         type="password"
                     />
                     <Checkbox
-                        customClass="mb-4"
+                        className="mb-4"
                         label="Remember Me"
                         handleChange={(e) => setData({ ...data, remember: e })}
                     />

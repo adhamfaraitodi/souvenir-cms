@@ -33,7 +33,7 @@ const Page = ({ product }) => {
 
                 <div className="md:col-span-2">
                     <div className="mb-6">
-                        <Title customClass="font-bold md:text-5xl mb-4">
+                        <Title className="mb-4 font-bold md:text-5xl">
                             {capitalize(product.name)}
                         </Title>
                         <div className="mb-1 flex flex-row gap-4">

@@ -3,6 +3,17 @@ import Layout from "../../../components/Layout";
 import { userMenus } from "../../../libs/menus";
 import { Link, usePage } from "@inertiajs/react";
 import Button from "../../../components/Button";
+import classNames from "classnames";
+
+const orderStatusClasses = {
+    completed: "bg-green-100 text-green-700",
+    pending: "bg-red-100 text-red-700",
+    default: "bg-blue-100 text-blue-700",
+};
+
+const getOrderStatusClass = (status) => {
+    return orderStatusClasses[status] || orderStatusClasses.default;
+};
 
 const Page = () => {
     const { orders } = usePage().props;
@@ -18,7 +29,6 @@ const Page = () => {
                     >
                         <div className="mb-2 flex flex-col justify-between md:flex-row md:items-center">
                             <div>
-                                {/* Order Date and Code */}
                                 <div className="text-sm text-gray-500">
                                     {new Date(
                                         order.created_at,
@@ -31,38 +41,30 @@ const Page = () => {
                                         {order.order_code}
                                     </span>
                                     <p
-                                        className={`ml-2 inline w-fit rounded-full px-3.5 py-[1px] text-center leading-tight ${
-                                            order.order_status === "completed"
-                                                ? "bg-green-100 text-green-700"
-                                                : order.order_status ===
-                                                    "pending"
-                                                  ? "bg-red-100 text-red-700"
-                                                  : "bg-blue-100 text-blue-700"
-                                        }`}
+                                        className={classNames(
+                                            "ml-2 inline w-fit rounded-full px-3.5 py-[1px] text-center leading-tight",
+                                            getOrderStatusClass(
+                                                order.order_status,
+                                            ),
+                                        )}
                                     >
                                         {order.order_status}
                                     </p>
                                 </div>
-                                {/* Placeholder for Product Name */}
                                 <h2 className="text-lg font-bold">
                                     Product Name
                                 </h2>
-                                {/* Quantity and Price */}
                                 <p className="text-sm text-gray-600">
                                     {order.qty || 1} x Rp{" "}
                                     {order.product_price || 0}
                                 </p>
                             </div>
                             <div className="flex flex-col items-end">
-                                {/* Order Status */}
-
-                                {/* Total Price */}
                                 <div className="flex flex-row items-center justify-end gap-1">
                                     <div className="mb-1 text-right text-lg font-bold">
                                         Rp{order.total_price || 0}
                                     </div>
                                 </div>
-                                {/* Action Buttons */}
                                 <Link
                                     href={
                                         order.order_status === "pending"
@@ -91,7 +93,6 @@ const Page = () => {
     );
 };
 
-// Attach the layout to the page
 Page.layout = (page) => <Layout children={page} menus={userMenus} />;
 
 export default Page;

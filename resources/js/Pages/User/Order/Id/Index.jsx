@@ -5,8 +5,10 @@ import { userMenus } from "../../../../libs/menus";
 import capitalize from "../../../../utils/capitalize";
 import QuantityChanger from "../../../../components/QuantityChanger";
 import Button from "../../../../components/Button";
+import DropdownSelect from "../../../../components/DropdownSelect";
+import classNames from "classnames";
 
-function OrderDetails({ order, addresses, officeAddress }) {
+const Page = ({ order, addresses, officeAddress }) => {
     const [quantity, setQuantity] = useState(1);
     const [selectedCourier, setSelectedCourier] = useState("jne");
     const [selectedAddress, setSelectedAddress] = useState(
@@ -32,6 +34,16 @@ function OrderDetails({ order, addresses, officeAddress }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const orderStatusClasses = {
+        completed: "bg-green-100 text-green-700",
+        pending: "bg-red-100 text-red-700",
+        default: "bg-blue-100 text-blue-700",
+    };
+
+    const getOrderStatusClass = (status) => {
+        return orderStatusClasses[status] || orderStatusClasses.default;
     };
 
     // Fetch shipping cost automatically when dependencies change
@@ -61,13 +73,10 @@ function OrderDetails({ order, addresses, officeAddress }) {
                         <div className="flex flex-row items-center gap-2">
                             <p className="text-gray-500">Status:</p>
                             <p
-                                className={`inline w-fit rounded-full px-3.5 py-[1px] text-center leading-tight ${
-                                    order.order_status === "completed"
-                                        ? "bg-green-100 text-green-700"
-                                        : order.order_status === "pending"
-                                          ? "bg-red-100 text-red-700"
-                                          : "bg-blue-100 text-blue-700"
-                                }`}
+                                className={classNames(
+                                    "inline w-fit rounded-full px-3.5 py-[1px] text-center leading-tight",
+                                    getOrderStatusClass(order.order_status),
+                                )}
                             >
                                 {order.order_status}
                             </p>
@@ -101,13 +110,15 @@ function OrderDetails({ order, addresses, officeAddress }) {
                             Rp. {productPrice.toLocaleString()}
                         </p>
                         <QuantityChanger
+                            disabled={order.order_status !== "pending"}
                             quantity={quantity}
                             setQuantity={setQuantity}
-                            customClass="mt-2"
+                            className="mt-2"
                         />
                     </div>
                 </div>
                 <textarea
+                    disabled={order.order_status !== "pending"}
                     className="mt-4 w-full border p-2"
                     placeholder="Add a note"
                 />
@@ -115,32 +126,30 @@ function OrderDetails({ order, addresses, officeAddress }) {
 
             <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
                 <h3 className="mb-2 text-lg font-bold">Delivery Details</h3>
-                <div className="mt-2">
-                    <label className="mb-1 block font-semibold">Courier:</label>
-                    <select
-                        className="w-full rounded border p-2"
-                        value={selectedCourier}
-                        onChange={(e) => setSelectedCourier(e.target.value)}
-                    >
-                        <option value="jne">JNE</option>
-                        <option value="pos">POS Indonesia</option>
-                    </select>
-                </div>
-                <div className="mt-4">
-                    <label className="mb-1 block font-semibold">Address:</label>
-                    <select
-                        className="w-full rounded border p-2"
-                        value={selectedAddress}
-                        onChange={(e) => setSelectedAddress(e.target.value)}
-                    >
-                        {addresses.map((address) => (
-                            <option key={address.id} value={address.city_id}>
-                                {address.street_address}, {address.city_name},{" "}
-                                {address.province_name} - {address.postal_code}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <DropdownSelect
+                    className="mt-2"
+                    label="Courier:"
+                    disabled={order.order_status !== "pending"}
+                    value={selectedCourier}
+                    onChange={setSelectedCourier}
+                >
+                    <option value="jne">JNE</option>
+                    <option value="pos">POS Indonesia</option>
+                </DropdownSelect>
+                <DropdownSelect
+                    className="mt-4"
+                    label="Address:"
+                    disabled={order.order_status !== "pending"}
+                    value={selectedAddress}
+                    onChange={setSelectedAddress}
+                >
+                    {addresses.map((address) => (
+                        <option key={address.id} value={address.city_id}>
+                            {address.street_address}, {address.city_name},{" "}
+                            {address.province_name} - {address.postal_code}
+                        </option>
+                    ))}
+                </DropdownSelect>
             </div>
 
             <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
@@ -168,8 +177,8 @@ function OrderDetails({ order, addresses, officeAddress }) {
             </div>
         </div>
     );
-}
+};
 
-OrderDetails.layout = (page) => <Layout children={page} menus={userMenus} />;
+Page.layout = (page) => <Layout children={page} menus={userMenus} />;
 
-export default OrderDetails;
+export default Page;

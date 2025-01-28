@@ -16,7 +16,7 @@ const Page = ({ customProducts, retailProducts }) => {
     return (
         <>
             <div className="mb-5 sm:mb-10 md:mb-20">
-                <Title customClass="md:mb-8 sm:mb-6 mb-4 font-semibold">
+                <Title className="mb-4 font-semibold sm:mb-6 md:mb-8">
                     Your Custom Products
                 </Title>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 lg:gap-6">
@@ -37,7 +37,7 @@ const Page = ({ customProducts, retailProducts }) => {
             </div>
             <div className="mb-10">
                 <Title
-                    customClass="md:mb-8 sm:mb-6 mb-4 font-semibold"
+                    className="mb-4 font-semibold sm:mb-6 md:mb-8"
                     level="h2"
                 >
                     See Other Products

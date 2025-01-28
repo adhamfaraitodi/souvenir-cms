@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import React from "react";
 
-const QuantityChanger = ({ quantity, setQuantity, customClass }) => {
+const QuantityChanger = ({ quantity, setQuantity, className, disabled }) => {
     return (
-        <div className={classNames("flex items-center gap-2", customClass)}>
+        <div className={classNames("flex items-center gap-2", className)}>
             <button
                 onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                disabled={quantity <= 1}
+                disabled={quantity <= 1 || disabled}
                 className="border px-2 py-1 disabled:opacity-50"
             >
                 -
@@ -19,7 +19,7 @@ const QuantityChanger = ({ quantity, setQuantity, customClass }) => {
             />
             <button
                 onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
-                disabled={quantity >= 10}
+                disabled={quantity >= 10 || disabled}
                 className="border px-2 py-1 disabled:opacity-50"
             >
                 +

@@ -6,7 +6,7 @@ const InputForm = ({
     handleChange,
     placeholder = label,
     type = "text",
-    customClass,
+    className,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -15,7 +15,7 @@ const InputForm = ({
         setShowPassword(!showPassword);
     };
     return (
-        <div className={customClass}>
+        <div className={className}>
             <label className="mb-2 block text-sm font-bold text-gray-700">
                 {label}
             </label>
