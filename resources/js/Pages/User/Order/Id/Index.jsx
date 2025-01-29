@@ -7,6 +7,8 @@ import QuantityChanger from "../../../../components/QuantityChanger";
 import Button from "../../../../components/Button";
 import DropdownSelect from "../../../../components/DropdownSelect";
 import classNames from "classnames";
+import { router } from "@inertiajs/react";
+import { swalFireConfirm, swalFireResult } from "../../../../libs/swalFire";
 
 const Page = ({ order, addresses, officeAddress }) => {
     const [quantity, setQuantity] = useState(1);
@@ -25,7 +27,6 @@ const Page = ({ order, addresses, officeAddress }) => {
                 destination: selectedAddress,
                 weight: order?.product?.weight * quantity || 0,
                 courier: selectedCourier,
-                price: "lowest",
             });
             setShippingCost(response.data.shippingCost || 0);
         } catch (error) {
@@ -33,6 +34,21 @@ const Page = ({ order, addresses, officeAddress }) => {
             setShippingCost(0);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCancel = async () => {
+        try {
+            const result = await swalFireConfirm(
+                "Yakin ingin cancel order?",
+                "",
+                "warning",
+            );
+
+            if (result.isConfirmed) {
+            }
+        } catch (err) {
+            swalFireResult("Gagal", "Gagal cancel order", "error");
         }
     };
 
@@ -58,7 +74,7 @@ const Page = ({ order, addresses, officeAddress }) => {
         <div className="container mx-auto p-4">
             <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
                 <h2 className="mb-2 text-lg font-bold">Order Details</h2>
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-col justify-between gap-4 md:flex-row">
                     <div className="flex flex-col gap-1">
                         <div className="flex flex-row gap-2">
                             <p className="text-gray-500">Invoice:</p>
@@ -83,8 +99,15 @@ const Page = ({ order, addresses, officeAddress }) => {
                         </div>
                     </div>
                     {order.order_status === "pending" ? (
-                        <div>
-                            <Button theme="warning">Finish Order</Button>
+                        <div className="flex flex-row-reverse justify-start gap-2 md:flex-col">
+                            <div>
+                                <Button>Pay Now</Button>
+                            </div>
+                            <div>
+                                <Button onClick={handleCancel} theme="danger">
+                                    Cancel Order
+                                </Button>
+                            </div>
                         </div>
                     ) : null}
                 </div>
