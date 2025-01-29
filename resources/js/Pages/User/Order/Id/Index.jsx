@@ -25,7 +25,6 @@ const Page = ({ order, addresses, officeAddress }) => {
                 destination: selectedAddress,
                 weight: order?.product?.weight * quantity || 0,
                 courier: selectedCourier,
-                price: "lowest",
             });
             setShippingCost(response.data.shippingCost || 0);
         } catch (error) {
