@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
-import { Link } from "@inertiajs/react";
+import { Link, default as useForm } from "@inertiajs/react";
 import Title from "../../../../components/Title";
 import capitalize from "../../../../utils/capitalize";
 import QuantityChanger from "../../../../components/QuantityChanger";
@@ -9,6 +9,19 @@ import Button from "../../../../components/Button";
 
 const Page = ({ product }) => {
     const [quantity, setQuantity] = useState(1);
+    const { data, setData, post, errors, reset, processing } = useForm({
+        qty: quantity,
+    });
+
+    useEffect(() => {
+        setData({
+            qty: quantity,
+        });
+    }, [quantity]);
+
+    const handleOrder = () => {
+        post(`/orders/create/${product.id}`);
+    };
     return (
         <div className="flex flex-col-reverse gap-10 md:flex-col md:gap-2">
             <div className="flex items-start justify-end">
@@ -19,7 +32,7 @@ const Page = ({ product }) => {
                     Order now
                 </button> */}
                 <div className="w-full md:w-auto">
-                    <Button>Order now</Button>
+                    <Button onClick={handleOrder}>Order now</Button>
                 </div>
                 {/* </Link> */}
             </div>
