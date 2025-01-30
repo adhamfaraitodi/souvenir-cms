@@ -3,13 +3,13 @@
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\RajaOngkirController;
+use App\Http\Controllers\User\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\ControlController as UserControlController;
 use App\Http\Controllers\User\LandingPageController as UserLandingPageController;
-use App\Http\Controllers\User\PaymentController as UserPaymentController;
 use App\Http\Controllers\User\ProductController as UserProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\AdminManageController as AdminManageController;
@@ -33,9 +33,9 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/orders/detail/{id}',[UserOrderController::class,'show'])->name('orders.detail');
     Route::get('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
     Route::get('/orders/{id}',[UserOrderController::class,'edit'])->name('orders.edit');
+    Route::get('/payment',[PaymentController::class,'show'])->name('payment.show');
     Route::resource('controls', UserControlController::class);
     Route::resource('landing-page', UserLandingPageController::class);
-    Route::resource('payments', UserPaymentController::class);
     Route::resource('products', UserProductController::class);
 });
 //Admin routes

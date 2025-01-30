@@ -7,10 +7,8 @@ import QuantityChanger from "../../../../components/QuantityChanger";
 import Button from "../../../../components/Button";
 import DropdownSelect from "../../../../components/DropdownSelect";
 import classNames from "classnames";
-import { router } from "@inertiajs/react";
-import { swalFireConfirm, swalFireResult } from "../../../../libs/swalFire";
 
-const Page = ({ order, addresses, officeAddress }) => {
+const Page = ({ user,order, addresses, officeAddress }) => {
     const [quantity, setQuantity] = useState(1);
     const [selectedCourier, setSelectedCourier] = useState("jne");
     const [selectedAddress, setSelectedAddress] = useState(
@@ -18,6 +16,7 @@ const Page = ({ order, addresses, officeAddress }) => {
     );
     const [shippingCost, setShippingCost] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
 
     const fetchShippingCost = async () => {
         setLoading(true);
@@ -36,22 +35,30 @@ const Page = ({ order, addresses, officeAddress }) => {
             setLoading(false);
         }
     };
-
-    const handleCancel = async () => {
+    const handleFinishOrder = async () => {
+        setPaymentLoading(true);
         try {
-            const result = await swalFireConfirm(
-                "Yakin ingin cancel order?",
-                "",
-                "warning",
-            );
-
-            if (result.isConfirmed) {
-            }
-        } catch (err) {
-            swalFireResult("Gagal", "Gagal cancel order", "error");
+            const payload = {
+                costumer_name: user.name,
+                costumer_email: user.email,
+                customer_phone: user.phone,
+                order_id: order.order_code,
+                product_name: order.product.name,
+                product_price: productPrice,
+                quantity: quantity,
+                shipping_cost: shippingCost,
+                gross_amount: totalCost,
+                courier: selectedCourier,
+            };
+            const response = await axios.post("/api/create-payment", payload);
+            window.location.href = `/payment?snap_token=${response.data.snap_token}`;
+        } catch (error) {
+            console.error("Error creating payment:", error);
+            alert("Failed to create payment. Please try again.");
+        } finally {
+            setPaymentLoading(false);
         }
     };
-
     const orderStatusClasses = {
         completed: "bg-green-100 text-green-700",
         pending: "bg-red-100 text-red-700",
@@ -74,7 +81,7 @@ const Page = ({ order, addresses, officeAddress }) => {
         <div className="container mx-auto p-4">
             <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
                 <h2 className="mb-2 text-lg font-bold">Order Details</h2>
-                <div className="flex flex-col justify-between gap-4 md:flex-row">
+                <div className="flex flex-row justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex flex-row gap-2">
                             <p className="text-gray-500">Invoice:</p>
@@ -97,17 +104,28 @@ const Page = ({ order, addresses, officeAddress }) => {
                                 {order.order_status}
                             </p>
                         </div>
+                        <div className="flex flex-row gap-2">
+                            <p className="text-gray-500">Name:</p>
+                            <p className="font-medium">{user.name}</p>
+                        </div>
+                        <div className="flex flex-row gap-2">
+                            <p className="text-gray-500">Email:</p>
+                            <p className="font-medium">{user.email}</p>
+                        </div>
+                        <div className="flex flex-row gap-2">
+                            <p className="text-gray-500">Phone:</p>
+                            <p className="font-medium">{user.phone}</p>
+                        </div>
                     </div>
                     {order.order_status === "pending" ? (
-                        <div className="flex flex-row-reverse justify-start gap-2 md:flex-col">
-                            <div>
-                                <Button>Pay Now</Button>
-                            </div>
-                            <div>
-                                <Button onClick={handleCancel} theme="danger">
-                                    Cancel Order
-                                </Button>
-                            </div>
+                        <div>
+                            <Button
+                                theme="warning"
+                                onClick={handleFinishOrder}
+                                disabled={paymentLoading}
+                            >
+                                {paymentLoading ? "Processing..." : "Finish Order"}
+                            </Button>
                         </div>
                     ) : null}
                 </div>
