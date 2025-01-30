@@ -9,7 +9,7 @@ import DropdownSelect from "../../../../components/DropdownSelect";
 import classNames from "classnames";
 
 const Page = ({ user,order, addresses, officeAddress }) => {
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(order.qty);
     const [selectedCourier, setSelectedCourier] = useState("jne");
     const [selectedAddress, setSelectedAddress] = useState(
         addresses[0]?.city_id || "",
@@ -39,18 +39,18 @@ const Page = ({ user,order, addresses, officeAddress }) => {
         setPaymentLoading(true);
         try {
             const payload = {
-                costumer_name: user.name,
-                costumer_email: user.email,
-                customer_phone: user.phone,
-                order_id: order.order_code,
-                product_name: order.product.name,
-                product_price: productPrice,
+                order_id:order.id,
+                order_code: order.order_code,
+                customer_name: user.name,
+                customer_email: user.email,
                 quantity: quantity,
                 shipping_cost: shippingCost,
-                gross_amount: totalCost,
                 courier: selectedCourier,
+                gross:totalCost,
             };
-            const response = await axios.post("/api/create-payment", payload);
+            const response = await axios.post("/api/create-payment", payload,{
+                headers:{"Content-Type": "application/json"},
+            });
             window.location.href = `/payment?snap_token=${response.data.snap_token}`;
         } catch (error) {
             console.error("Error creating payment:", error);
@@ -69,12 +69,11 @@ const Page = ({ user,order, addresses, officeAddress }) => {
         return orderStatusClasses[status] || orderStatusClasses.default;
     };
 
-    // Fetch shipping cost automatically when dependencies change
     useEffect(() => {
         fetchShippingCost();
     }, [selectedAddress, quantity, selectedCourier]);
 
-    const productPrice = order?.product?.price || 0;
+    const productPrice = order?.price || 0;
     const totalCost = productPrice * quantity + shippingCost;
 
     return (
@@ -148,7 +147,7 @@ const Page = ({ user,order, addresses, officeAddress }) => {
                         <p>Weight: {order.product.weight * quantity} gram</p>
                         <p>Package: {order.product.package}</p>
                         <p className="font-bold">
-                            Rp. {productPrice.toLocaleString()}
+                            {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(productPrice)}
                         </p>
                         <QuantityChanger
                             disabled={order.order_status !== "pending"}
@@ -197,14 +196,14 @@ const Page = ({ user,order, addresses, officeAddress }) => {
                 <h3 className="mb-2 text-lg font-bold">Payment Details</h3>
                 <div className="flex justify-between">
                     <span>Product Price</span>
-                    <span>Rp. {productPrice.toLocaleString()}</span>
+                    <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(productPrice)}</span>
                 </div>
                 <div className="flex justify-between">
                     <span>Delivery Price</span>
                     <span>
                         {loading
                             ? "Loading..."
-                            : `Rp. ${shippingCost.toLocaleString()}`}
+                            : `${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(shippingCost)}`}
                     </span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
@@ -212,7 +211,7 @@ const Page = ({ user,order, addresses, officeAddress }) => {
                     <span>
                         {loading
                             ? "Loading..."
-                            : `Rp. ${totalCost.toLocaleString()}`}
+                            : `${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalCost)}`}
                     </span>
                 </div>
             </div>

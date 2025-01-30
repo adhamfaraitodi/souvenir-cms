@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
-import { Link, default as useForm } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import Title from "../../../../components/Title";
 import capitalize from "../../../../utils/capitalize";
 import QuantityChanger from "../../../../components/QuantityChanger";
@@ -63,7 +63,7 @@ const Page = ({ product }) => {
                     <div className="mb-2">
                         <p className="text-gray-500">Total</p>
                         <p className="text-xl font-bold md:text-3xl">
-                            Rp{(product.price * quantity).toLocaleString()}
+                            {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(product.price * quantity)}
                         </p>
                     </div>
                     <div className="mb-10 flex flex-row items-center gap-4">

@@ -53,14 +53,14 @@ const Page = ({ orders }) => {
                                     Product Name
                                 </h2>
                                 <p className="text-sm text-gray-600">
-                                    {order.qty || 1} x Rp{" "}
-                                    {order.product_price || 0}
+                                    {order.qty || 1} x{" "}
+                                    {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(order.product_price || 0)}
                                 </p>
                             </div>
                             <div className="flex flex-col items-end">
                                 <div className="flex flex-row items-center justify-end gap-1">
                                     <div className="mb-1 text-right text-lg font-bold">
-                                        Rp{order.total_price || 0}
+                                        {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(order.total_price || 0)}
                                     </div>
                                 </div>
                                 <Link

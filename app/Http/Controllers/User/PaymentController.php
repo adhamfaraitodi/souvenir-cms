@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Delivery;
+use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -17,47 +18,71 @@ class PaymentController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }
-
     public function createPayment(Request $request)
     {
-        $request->validate([
-            'order_id' => 'required',
-            'gross_amount' => 'required',
-        ]);
+        $this->validateAndUpdateOrder($request);
+        $snapToken = $this->generateSnapToken($request);
+        return response()->json(['snap_token' => $snapToken]);
+    }
 
+    private function validateAndUpdateOrder(Request $request)
+    {
+        $request->validate([
+            'order_id'=>'required',
+            'order_code' => 'required',
+            'customer_name' => 'required',
+            'customer_email' => 'required',
+            'quantity' => 'required',
+            'shipping_cost' => 'required',
+            'courier' => 'required',
+            'gross'=>'required'
+        ]);
+        $order = Order::where('id', $request->order_id)->first();
+        if ($order) {
+            $order->update([
+                'qty' => $request->quantity,
+                'delivery_fee' => $request->shipping_cost,
+                'total_price' => ($order->product_price * $request->quantity) + $request->shipping_cost,
+            ]);
+            Delivery::updateOrCreate(
+                ['order_id' => $order->id],
+                [
+                    'courier_name' => $request->courier,
+                    'tracking_number' => 'jneselalu',
+                    'shipping_status' => 'shipped'
+                ]
+            );
+        } else {
+            throw new \Exception('Order not found');
+        }
+    }
+
+    private function generateSnapToken(Request $request)
+    {
         $transactionDetails = [
-            'order_id' => $request->order_id,
-            'gross_amount' => $request->gross_amount,
+            'order_id' => $request->order_code,
+            'gross_amount' => $request->gross,
         ];
         $customerDetails = [
-            'first_name' => Auth::user()->name,
-            'email' => Auth::user()->email,
-            'phone' => Auth::user()->phone,
-        ];
-        $itemDetails = [
-            [
-                'id' => $request->order_id,
-                'price' => $request->amount,
-                'quantity' => 1,
-                'name' => $request->product_name,
-            ],
+            'first_name' => $request->customer_name,
+            'email' => $request->customer_email,
         ];
         $payload = [
             'transaction_details' => $transactionDetails,
             'customer_details' => $customerDetails,
-            'item_details' => $itemDetails,
         ];
         try {
             $snapToken = Snap::getSnapToken($payload);
-            return response()->json(['snap_token' => $snapToken]);
+            return $snapToken;
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            throw new \Exception("Failed to generate Snap token: " . $e->getMessage());
         }
     }
     public function show(Request $request)
     {
-        return inertia('Payment', [
-            'snap_token' => $request->snap_token
+        $snapToken = $request->query('snap_token');
+        return inertia('User/Payment/Index', [
+            'snapToken' => $snapToken,
         ]);
     }
 }

@@ -31,7 +31,7 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/', [UserDashboardController::class, 'Index'])->name('home');
     Route::get('/orders/list',[UserOrderController::class,'index'])->name('orders.list');
     Route::get('/orders/detail/{id}',[UserOrderController::class,'show'])->name('orders.detail');
-    Route::get('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
+    Route::post('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
     Route::get('/orders/{id}',[UserOrderController::class,'edit'])->name('orders.edit');
     Route::get('/payment',[PaymentController::class,'show'])->name('payment.show');
     Route::resource('controls', UserControlController::class);

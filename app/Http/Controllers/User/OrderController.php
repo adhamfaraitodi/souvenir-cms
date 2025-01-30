@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -27,20 +28,41 @@ class OrderController extends Controller
         }
         return Inertia::render('User/Order/Id/Index', ['order' => $order]);
     }
-    public function create(Request $request,$product_id)
+    public function create(Request $request, $product_id)
     {
-        $product = Product::findOrFail($product_id);
-        $orderCode = $this->generateUniqueOrderId();
-        $user = User::where('id', Auth::user()->id)->first();
-        $order = Order::create([
-            'order_code' => $orderCode,
-            'user_id' => $user->id,
-            'product_id' => $product->id,
-            'landing_page_id' => null,
-            'order_status'=>"pending",
+        // Validate the request
+        $request->validate([
+            'qty' => 'required|integer|min:1',
         ]);
-        return redirect()->route('user.orders.edit', $order->order_code);
+
+        try {
+            $product = Product::findOrFail($product_id);
+            $orderCode = $this->generateUniqueOrderId();
+            $user = Auth::user();
+            $qty = $request->qty;
+            $total = $qty * $product->price;
+            DB::beginTransaction();
+
+            $order = Order::create([
+                'order_code' => $orderCode,
+                'user_id' => $user->id,
+                'product_id' => $product->id,
+                'landing_page_id' => null,
+                'qty' => $qty,
+                'product_price' => $product->price,
+                'total_price' => $total,
+                'order_status' => "pending",
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('user.orders.edit', $order->order_code);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Failed to create order. Please try again.']);
+        }
     }
+
     private function generateUniqueOrderId(): string
     {
         do {
@@ -51,52 +73,29 @@ class OrderController extends Controller
 
     public function edit(string $orderCode)
     {
-        $order = Order::where('order_code', $orderCode)
-            ->with('product.category','user', 'user.addresses')
-            ->first();
+        $order = Order::with(['product.category', 'user.addresses'])->where('order_code', $orderCode)->firstOrFail();
+        $user = $order->user;
+        $addresses = $user->addresses;
+        $officeAddress = OfficeAddress::first(['city_id']);
 
-        if (!$order) {
-            return redirect()->route('orders.index')->with('error', 'Order not found.');
-        }
-        $user =$order->user;
-        $addresses = $order->user->addresses;
-        $officeAddress = OfficeAddress::first();
         $data = [
-            'user'=>[
-                'name'=>$user->name,
-                'email'=>$user->email,
-                'phone'=>$user->phone,
-            ],
+            'user' => collect($user)->only(['name', 'email', 'phone']),
             'order' => [
-                'id' => $order->order_id,
-                'order_code'=>$order->order_code,
-                'order_status'=>$order->order_status,
-                'product' => [
-                    'id' => $order->product->product_id,
-                    'name' => $order->product->name,
-                    'type' => $order->product->type,
-                    'category' => $order->product->category->name,
-                    'price' => $order->product->price,
-                    'image' => $order->product->product_image,
-                    'weight' => $order->product->weight,
-                    'package' => $order->product->package,
-                ],
+                'id' => $order->id,
+                'order_code' => $order->order_code,
+                'order_status' => $order->order_status,
+                'qty' => $order->qty,
+                'price' => $order->product_price,
+                'product' => collect($order->product)->only(['product_id', 'name', 'type', 'weight', 'package'])
+                    ->merge([
+                        'category' => $order->product->category->name,
+                        'image' => $order->product->product_image,
+                    ]),
             ],
-            'addresses' => $addresses->map(function ($address) {
-                return [
-                    'id' => $address->id,
-                    'user_id' => $address->user_id,
-                    'province_id' => $address->province_id,
-                    'province_name' => $address->province_name,
-                    'city_id' => $address->city_id,
-                    'city_name' => $address->city_name,
-                    'postal_code' => $address->postal_code,
-                    'street_address' => $address->street_address,
-                ];
-            }),
-            'officeAddress' =>[
-                'city_id' => $officeAddress->city_id,
-            ],
+            'addresses' => $addresses->map(fn($address) => collect($address)->only([
+                'id', 'province_name', 'city_id', 'city_name', 'postal_code', 'street_address'
+            ])),
+            'officeAddress' => $officeAddress ? ['city_id' => $officeAddress->city_id] : null,
         ];
 
         return Inertia::render('User/Order/Id/Index', $data);
