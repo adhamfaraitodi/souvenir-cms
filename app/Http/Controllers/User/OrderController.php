@@ -19,7 +19,7 @@ class OrderController extends Controller
         $orders = Order::where('user_id', Auth::user()->id)->get();
         return Inertia::render('User/Order/Index', ['orders' => $orders]);
     }
-    public function show(string $id) //order detail later will be changed route to orders/detail/{id}
+    public function show(string $id)
     {
         $order = Order::find($id);
         if (!$order) {
@@ -52,15 +52,21 @@ class OrderController extends Controller
     public function edit(string $orderCode)
     {
         $order = Order::where('order_code', $orderCode)
-            ->with('product', 'user.addresses')
+            ->with('product.category','user', 'user.addresses')
             ->first();
 
         if (!$order) {
             return redirect()->route('orders.index')->with('error', 'Order not found.');
         }
+        $user =$order->user;
         $addresses = $order->user->addresses;
         $officeAddress = OfficeAddress::first();
         $data = [
+            'user'=>[
+                'name'=>$user->name,
+                'email'=>$user->email,
+                'phone'=>$user->phone,
+            ],
             'order' => [
                 'id' => $order->order_id,
                 'order_code'=>$order->order_code,

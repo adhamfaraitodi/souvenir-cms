@@ -4,59 +4,60 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        //
+        Config::$serverKey = config('services.midtrans.server_key');
+        Config::$isProduction = config('services.midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function createPayment(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'order_id' => 'required',
+            'gross_amount' => 'required',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        $transactionDetails = [
+            'order_id' => $request->order_id,
+            'gross_amount' => $request->gross_amount,
+        ];
+        $customerDetails = [
+            'first_name' => Auth::user()->name,
+            'email' => Auth::user()->email,
+            'phone' => Auth::user()->phone,
+        ];
+        $itemDetails = [
+            [
+                'id' => $request->order_id,
+                'price' => $request->amount,
+                'quantity' => 1,
+                'name' => $request->product_name,
+            ],
+        ];
+        $payload = [
+            'transaction_details' => $transactionDetails,
+            'customer_details' => $customerDetails,
+            'item_details' => $itemDetails,
+        ];
+        try {
+            $snapToken = Snap::getSnapToken($payload);
+            return response()->json(['snap_token' => $snapToken]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return inertia('Payment', [
+            'snap_token' => $request->snap_token
+        ]);
     }
 }
