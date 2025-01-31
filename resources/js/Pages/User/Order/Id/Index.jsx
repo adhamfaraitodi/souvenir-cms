@@ -17,6 +17,7 @@ const Page = ({ user,order, addresses, officeAddress }) => {
     const [shippingCost, setShippingCost] = useState(0);
     const [loading, setLoading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
+    const [note, setNote] = useState("");
 
     const fetchShippingCost = async () => {
         setLoading(true);
@@ -47,11 +48,10 @@ const Page = ({ user,order, addresses, officeAddress }) => {
                 shipping_cost: shippingCost,
                 courier: selectedCourier,
                 gross:totalCost,
+                note: note,
             };
-            const response = await axios.post("/api/create-payment", payload,{
-                headers:{"Content-Type": "application/json"},
-            });
-            window.location.href = `/payment?snap_token=${response.data.snap_token}`;
+            const response = await axios.post("/api/create-payment", payload);
+            window.location.href = `/payment?snap_token=${response.data.snap_token}&order_code=${order.order_code}`;
         } catch (error) {
             console.error("Error creating payment:", error);
             alert("Failed to create payment. Please try again.");
@@ -161,6 +161,8 @@ const Page = ({ user,order, addresses, officeAddress }) => {
                     disabled={order.order_status !== "pending"}
                     className="mt-4 w-full border p-2"
                     placeholder="Add a note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
                 />
             </div>
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Delivery;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -21,7 +22,14 @@ class PaymentController extends Controller
     public function createPayment(Request $request)
     {
         $this->validateAndUpdateOrder($request);
-        $snapToken = $this->generateSnapToken($request);
+        $cacheKey = 'snap_token:' . $request->order_code;
+        if (Cache::has($cacheKey)) {
+            $snapToken = Cache::get($cacheKey);
+        } else {
+            $snapToken = $this->generateSnapToken($request);
+            Cache::put($cacheKey, $snapToken, now()->addHours(1));
+        }
+
         return response()->json(['snap_token' => $snapToken]);
     }
 
@@ -35,7 +43,7 @@ class PaymentController extends Controller
             'quantity' => 'required',
             'shipping_cost' => 'required',
             'courier' => 'required',
-            'gross'=>'required'
+            'gross'=>'required',
         ]);
         $order = Order::where('id', $request->order_id)->first();
         if ($order) {
@@ -43,6 +51,7 @@ class PaymentController extends Controller
                 'qty' => $request->quantity,
                 'delivery_fee' => $request->shipping_cost,
                 'total_price' => ($order->product_price * $request->quantity) + $request->shipping_cost,
+                'note'=>$request->note,
             ]);
             Delivery::updateOrCreate(
                 ['order_id' => $order->id],
@@ -80,7 +89,14 @@ class PaymentController extends Controller
     }
     public function show(Request $request)
     {
-        $snapToken = $request->query('snap_token');
+        $orderCode = $request->query('order_code');
+        $cacheKey = 'snap_token:' . $orderCode;
+        $snapToken = Cache::get($cacheKey);
+
+        if (!$snapToken) {
+            return redirect()->route('user.orders.list')->with('error', 'Your payment session has expired. Please start a new payment.');
+        }
+
         return inertia('User/Payment/Index', [
             'snapToken' => $snapToken,
         ]);

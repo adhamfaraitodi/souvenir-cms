@@ -28,7 +28,7 @@ Route::middleware('guest')->group(function () {
 Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name('admin.logout');
 // User routes
 Route::name('user.')->middleware('is_user')->group(function () {
-    Route::get('/', [UserDashboardController::class, 'Index'])->name('home');
+    Route::get('/', [UserProductController::class, 'Index'])->name('home');
     Route::get('/orders/list',[UserOrderController::class,'index'])->name('orders.list');
     Route::get('/orders/detail/{id}',[UserOrderController::class,'show'])->name('orders.detail');
     Route::post('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
