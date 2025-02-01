@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\RajaOngkirController;
+use App\Http\Controllers\User\AccountController;
 use App\Http\Controllers\User\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
@@ -28,13 +29,14 @@ Route::middleware('guest')->group(function () {
 Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name('admin.logout');
 // User routes
 Route::name('user.')->middleware('is_user')->group(function () {
-    Route::get('/', [UserProductController::class, 'Index'])->name('home');
+    Route::get('/', [UserProductController::class, 'index'])->name('home');
     Route::get('/orders/list',[UserOrderController::class,'index'])->name('orders.list');
     Route::get('/orders/detail/{id}',[UserOrderController::class,'show'])->name('orders.detail');
     Route::post('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
     Route::get('/orders/{id}',[UserOrderController::class,'edit'])->name('orders.edit');
     Route::get('/payment',[PaymentController::class,'show'])->name('payment.show');
-    Route::resource('controls', UserControlController::class);
+    Route::get('/account/profile',[AccountController::class,'index'])->name('account.index');
+    Route::get('/account/setting',[AccountController::class,'settings'])->name('account.setting');
     Route::resource('landing-page', UserLandingPageController::class);
     Route::resource('products', UserProductController::class);
 });
