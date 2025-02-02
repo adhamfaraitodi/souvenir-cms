@@ -11,9 +11,7 @@ class OfficeAddress extends Model
     protected $table = 'office_addresses';
     protected $fillable = [
         'province_id',
-        'province_name',
         'city_id',
-        'city_name',
         'postal_code',
         'street_address',
         'changed_by',
@@ -24,4 +22,12 @@ class OfficeAddress extends Model
     protected $casts = [
         'changed_by' => 'string',
     ];
+    public function City()
+    {
+        return $this->belongsTo(City::class,'city_id');
+    }
+    public function Province()
+    {
+        return $this->belongsTo(Province::class,'province_id');
+    }
 }

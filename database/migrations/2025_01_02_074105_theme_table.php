@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('landing_pages', function (Blueprint $table) {
+        Schema::create('themes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('theme_id')->constrained('themes')->noActionOnDelete();
             $table->string('title', 255);
-            $table->string('landing_page_url', 255);
             $table->text('html_code');
             $table->text('css_code');
             $table->timestamps();
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('landing_pages');
+        Schema::dropIfExists('themes');
     }
 };

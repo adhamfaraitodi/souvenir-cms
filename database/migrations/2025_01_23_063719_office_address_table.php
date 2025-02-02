@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('office_addresses', function (Blueprint $table) {
             $table->id();
-            $table->string('province_id');
-            $table->string('province_name', 100);
-            $table->string('city_id');
-            $table->string('city_name', 100);
+            $table->foreignId('province_id')->constrained('provinces')->noActionOnDelete();
+            $table->foreignId('city_id')->constrained('cities')->noActionOnDelete();
             $table->string('postal_code', 15);
             $table->text('street_address');
             $table->string('changed_by');

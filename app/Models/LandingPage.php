@@ -10,10 +10,11 @@ class LandingPage extends Model
     use HasFactory;
     protected $table = 'landing_pages';
     protected $fillable = [
+        'theme_id',
         'title',
         'landing_page_url',
-        'html_url',
-        'css_url',
+        'html_code',
+        'css_code',
         'created_at',
         'updated_at',
     ];
@@ -21,5 +22,9 @@ class LandingPage extends Model
     public function orders()
     {
         return $this->hasOne(Order::class, 'landing_page_id');
+    }
+    public function Theme()
+    {
+        return $this->belongsTo(Theme::class,'theme_id');
     }
 }

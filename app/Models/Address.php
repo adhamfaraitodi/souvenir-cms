@@ -12,16 +12,18 @@ class Address extends Model
     protected $fillable = [
         'user_id',
         'province_id',
-        'province_name',
         'city_id',
-        'city_name',
         'postal_code',
         'street_address',
         'created_at',
         'updated_at'
     ];
-    public function user()
+    public function City()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(City::class,'city_id');
+    }
+    public function Province()
+    {
+        return $this->belongsTo(Province::class,'province_id');
     }
 }

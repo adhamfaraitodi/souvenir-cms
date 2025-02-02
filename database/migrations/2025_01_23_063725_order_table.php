@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('order_code',15);
             $table->string('company_profile', 255)->nullable();
             $table->text('note')->nullable();
-            $table->enum('order_status', ['pending', 'in_production', 'shipped', 'completed', 'canceled']);
+            $table->enum('order_status', ['pending','paid', 'in_production', 'shipped', 'completed', 'canceled']);
             $table->integer('qty')->nullable();
             $table->bigInteger('product_price')->nullable();
             $table->bigInteger('delivery_fee')->nullable();
