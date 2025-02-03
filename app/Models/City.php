@@ -10,17 +10,14 @@ class City extends Model
     use HasFactory;
     protected $table = 'cities';
     protected $fillable = [
+        'province_id',
         'city_name',
         'created_at',
         'updated_at'
     ];
 
-    public function address()
+    public function province()
     {
-        return $this->hasOne(Address::class, 'city_id');
-    }
-    public function OfficeAddress()
-    {
-        return $this->hasOne(OfficeAddress::class, 'city_id');
+        return $this->belongsTo(Province::class, 'province_id');
     }
 }

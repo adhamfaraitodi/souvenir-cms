@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
-            $table->string('city_name', 100);
+            $table->foreignId('province_id')->constrained('provinces')->cascadeOnDelete()->index();
+            $table->string('city_name', 100)->index();
             $table->timestamps();
         });
     }

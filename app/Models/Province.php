@@ -15,12 +15,8 @@ class Province extends Model
         'updated_at'
     ];
 
-    public function address()
+    public function cities()
     {
-        return $this->hasOne(Address::class, 'province_id');
-    }
-    public function OfficeAddress()
-    {
-        return $this->hasOne(OfficeAddress::class, 'province_id');
+        return $this->hasMany(City::class, 'province_id');
     }
 }

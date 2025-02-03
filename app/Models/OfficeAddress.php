@@ -10,7 +10,6 @@ class OfficeAddress extends Model
     use HasFactory;
     protected $table = 'office_addresses';
     protected $fillable = [
-        'province_id',
         'city_id',
         'postal_code',
         'street_address',
@@ -25,9 +24,5 @@ class OfficeAddress extends Model
     public function City()
     {
         return $this->belongsTo(City::class,'city_id');
-    }
-    public function Province()
-    {
-        return $this->belongsTo(Province::class,'province_id');
     }
 }

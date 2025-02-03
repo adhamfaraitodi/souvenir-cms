@@ -11,7 +11,6 @@ class Address extends Model
     protected $table = 'addresses';
     protected $fillable = [
         'user_id',
-        'province_id',
         'city_id',
         'postal_code',
         'street_address',
@@ -21,9 +20,5 @@ class Address extends Model
     public function City()
     {
         return $this->belongsTo(City::class,'city_id');
-    }
-    public function Province()
-    {
-        return $this->belongsTo(Province::class,'province_id');
     }
 }

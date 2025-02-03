@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('province_id')->constrained('provinces')->noActionOnDelete();
-            $table->foreignId('city_id')->constrained('cities')->noActionOnDelete();
-            $table->string('postal_code', 15);
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->index()->name('fk_addresses_user');
+            $table->foreignId('city_id')->constrained('cities')->noActionOnDelete()->index()->name('fk_addresses_city');
+            $table->string('postal_code', 15)->index();
             $table->text('street_address');
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

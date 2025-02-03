@@ -11,10 +11,7 @@ class OfficeAddressSeeder extends Seeder
     public function run()
     {
         OfficeAddress::create([
-            'province_id' => '501',
-            'province_name' => 'DI Yogyakarta',
             'city_id' => '5',
-            'city_name' => 'Yogyakarta',
             'postal_code' => '55111',
             'street_address' => 'Jl. Kebun Raya No.2, Rejowinangun',
             'changed_by' => 'admin',
