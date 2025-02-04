@@ -7,6 +7,8 @@ const InputForm = ({
     placeholder = label,
     type = "text",
     className,
+    value,
+    required,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -14,14 +16,17 @@ const InputForm = ({
         e.preventDefault();
         setShowPassword(!showPassword);
     };
+
+    const InputTag = type === "textarea" ? "textarea" : "input";
+
     return (
         <div className={className}>
-            <label className="mb-2 block text-sm font-bold text-gray-700">
-                {label}
-            </label>
+            {label ? (
+                <label className="mb-1 block text-sm font-bold">{label}</label>
+            ) : null}
             <div className="relative">
-                <input
-                    className="focus:shadow-outline mt-2 w-full appearance-none rounded-lg border px-3 py-2 leading-tight text-gray-700 focus:outline-none"
+                <InputTag
+                    className="focus:shadow-outline w-full appearance-none rounded-lg border px-3 py-2 leading-tight text-gray-700 focus:outline-none"
                     type={
                         type === "password"
                             ? showPassword
@@ -31,6 +36,8 @@ const InputForm = ({
                     }
                     placeholder={placeholder}
                     onChange={(e) => handleChange(e.target.value)}
+                    value={value}
+                    required={required}
                 />
                 {type === "password" ? (
                     <button

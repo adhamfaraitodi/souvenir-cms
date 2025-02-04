@@ -1,28 +1,62 @@
 import Layout from "../../../components/Layout";
 import { userMenus } from "../../../libs/menus";
-import { usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "../../../components/Button";
+import PopupWrapper from "../../../components/PopupWrapper";
+import DropdownSelect from "../../../components/DropdownSelect";
+import InputForm from "../../../components/InputForm";
 
-const ProfilePage = () => {
-    const { user, addresses, cities, provinces } = usePage().props;
-    const [selectedProvince, setSelectedProvince] = useState("");
-    const [selectedCity, setSelectedCity] = useState("");
-    const [postalCode, setPostalCode] = useState("");
-    const [street, setStreet] = useState("");
+const initialAddressState = {
+    id: null,
+    province_id: "",
+    city_id: "",
+    postal_code: "",
+    street_address: "",
+};
+
+const initialProfileState = {
+    name: "",
+    email: "",
+    phone: "",
+};
+
+const ProfilePage = ({ user, addresses, cities, provinces }) => {
+    // Profile State
+    const [profileData, setProfileData] = useState({
+        ...initialProfileState,
+        ...user,
+    });
+
+    // Address State
+    const [addressData, setAddressData] = useState(initialAddressState);
     const [filteredCities, setFilteredCities] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [isAddressPopupOpen, setIsAddressPopupOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [editMode, setEditMode] = useState(false);
 
-    const handleProvinceChange = (e) => {
-        const provinceId = e.target.value;
-        setSelectedProvince(provinceId);
-        setSelectedCity("");
-
-        if (provinceId) {
+    // Use effect to handle initial city filtering when editing
+    useEffect(() => {
+        if (addressData.province_id) {
             const citiesInProvince = cities.filter(
-                (city) => city.province_id === parseInt(provinceId),
+                (city) =>
+                    city.province_id === parseInt(addressData.province_id),
+            );
+            setFilteredCities(citiesInProvince);
+        }
+    }, [addressData.province_id, cities]);
+
+    const handleProvinceChange = (value) => {
+        setAddressData((prev) => ({
+            ...prev,
+            province_id: value,
+            city_id: "", // Reset city when province changes
+        }));
+
+        if (value) {
+            const citiesInProvince = cities.filter(
+                (city) => city.province_id === parseInt(value),
             );
             setFilteredCities(citiesInProvince);
         } else {
@@ -30,45 +64,67 @@ const ProfilePage = () => {
         }
     };
 
-    const handleCityChange = (e) => {
-        const cityId = e.target.value;
-        setSelectedCity(cityId);
+    const handleCityChange = (value) => {
+        setAddressData((prev) => ({ ...prev, city_id: value }));
+    };
 
-        if (cityId) {
-            const selectedCityData = cities.find(
-                (city) => city.id === parseInt(cityId),
-            );
-            if (selectedCityData) {
-                setSelectedProvince(selectedCityData.province_id.toString());
-                const citiesInProvince = cities.filter(
-                    (city) => city.province_id === selectedCityData.province_id,
-                );
-                setFilteredCities(citiesInProvince);
-            }
-        }
+    const resetAddressForm = () => {
+        setAddressData(initialAddressState);
+        setFilteredCities([]);
+        setError("");
+        setEditMode(false);
     };
-    const handleEditClick = (addressId) => {
-        window.location.href = `/edit-address/${addressId}`;
+
+    const handleClose = () => {
+        setIsAddressPopupOpen(false);
+        resetAddressForm();
     };
-    const handleSubmit = async (e) => {
+
+    const handleEditClick = (address) => {
+        // Convert IDs to strings for the select inputs
+        setAddressData({
+            id: address.id,
+            province_id: address.province_id.toString(),
+            city_id: address.city_id.toString(),
+            postal_code: address.postal_code,
+            street_address: address.street_address,
+        });
+        setEditMode(true);
+        setIsAddressPopupOpen(true);
+    };
+
+    const handleAddClick = () => {
+        resetAddressForm();
+        setIsAddressPopupOpen(true);
+    };
+
+    // Rest of the code remains the same...
+    const handleAddressSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setIsLoading(true);
         setError("");
 
-        if (!selectedProvince || !selectedCity || !postalCode || !street) {
+        const { province_id, city_id, postal_code, street_address } =
+            addressData;
+
+        if (!province_id || !city_id || !postal_code || !street_address) {
             setError("Please fill in all fields");
-            setLoading(false);
+            setIsLoading(false);
             return;
         }
 
         try {
+            const url = editMode
+                ? `/update-address/${addressData.id}`
+                : "/create-address";
+
             const response = await axios.post(
-                "/create-address",
+                url,
                 {
-                    province_id: selectedProvince,
-                    city_id: selectedCity,
-                    postal_code: postalCode,
-                    street_address: street,
+                    province_id,
+                    city_id,
+                    postal_code,
+                    street_address,
                 },
                 {
                     headers: {
@@ -76,7 +132,7 @@ const ProfilePage = () => {
                         "X-Requested-With": "XMLHttpRequest",
                         "X-CSRF-TOKEN": document.querySelector(
                             'meta[name="csrf-token"]',
-                        ).content,
+                        )?.content,
                     },
                 },
             );
@@ -92,7 +148,7 @@ const ProfilePage = () => {
                     "An error occurred while saving the address",
             );
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -102,13 +158,13 @@ const ProfilePage = () => {
             <h2 className="mb-4 text-xl font-semibold">Profile</h2>
             <div className="mb-6 rounded-md border bg-gray-100 p-4">
                 <p>
-                    <strong>User name:</strong> {user.name}
+                    <strong>User name:</strong> {profileData.name}
                 </p>
                 <p>
-                    <strong>Email:</strong> {user.email}
+                    <strong>Email:</strong> {profileData.email}
                 </p>
                 <p>
-                    <strong>Phone:</strong> {user.phone}
+                    <strong>Phone:</strong> {profileData.phone}
                 </p>
                 <div className="mt-2 w-fit">
                     <Button theme="gray">Edit Profile</Button>
@@ -120,7 +176,7 @@ const ProfilePage = () => {
                 addresses.map((address, index) => (
                     <div
                         key={address.id}
-                        className="mb-3 flex items-center justify-between rounded-md border bg-gray-50 p-4"
+                        className="mb-3 flex flex-col justify-between gap-y-4 rounded-md border bg-gray-50 p-4 md:flex-row md:items-center"
                     >
                         <div className="flex items-center">
                             {index === 0 && (
@@ -133,9 +189,9 @@ const ProfilePage = () => {
                                 {address.province_name} - {address.postal_code}
                             </p>
                         </div>
-                        <div>
+                        <div className="w-fit">
                             <Button
-                                onClick={() => handleEditClick(address.id)}
+                                onClick={() => handleEditClick(address)}
                                 theme="gray"
                             >
                                 Edit Address
@@ -147,26 +203,34 @@ const ProfilePage = () => {
                 <p className="text-gray-500">No addresses available.</p>
             )}
 
-            <Button className="">Add Address</Button>
+            <Button
+                onClick={handleAddClick}
+                disabled={addresses.length >= 3}
+                className={
+                    addresses.length >= 3 ? "cursor-not-allowed opacity-50" : ""
+                }
+            >
+                Add Address
+            </Button>
 
-            {/* Address Add Form */}
-            <div className="mx-auto max-w-3xl rounded-md bg-white p-6 shadow">
-                <h2 className="mb-4 text-xl font-semibold">Add New Address</h2>
-                {error && (
-                    <div className="mb-4 rounded bg-red-100 p-3 text-red-700">
-                        {error}
-                    </div>
-                )}
-                <form
-                    onSubmit={handleSubmit}
-                    className="rounded-md border bg-gray-100 p-4"
-                >
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="text-gray-700">Province:</label>
-                            <select
-                                className="w-full rounded border px-3 py-2"
-                                value={selectedProvince}
+            <PopupWrapper isVisible={isAddressPopupOpen} onClose={handleClose}>
+                <div className="mx-auto max-w-3xl rounded-md bg-white p-6 shadow">
+                    <h2 className="mb-4 text-xl font-semibold">
+                        {editMode ? "Edit Address" : "Add New Address"}
+                    </h2>
+                    {error && (
+                        <div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+                            {error}
+                        </div>
+                    )}
+                    <form
+                        onSubmit={handleAddressSubmit}
+                        className="rounded-md border bg-gray-100 p-4"
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <DropdownSelect
+                                label="Province:"
+                                value={addressData.province_id}
                                 onChange={handleProvinceChange}
                                 required
                             >
@@ -179,19 +243,16 @@ const ProfilePage = () => {
                                         {province.province_name}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
+                            </DropdownSelect>
 
-                        <div>
-                            <label className="text-gray-700">City:</label>
-                            <select
-                                className="w-full rounded border px-3 py-2"
-                                value={selectedCity}
+                            <DropdownSelect
+                                label="City:"
+                                value={addressData.city_id}
                                 onChange={handleCityChange}
                                 required
                             >
                                 <option value="">Select your city</option>
-                                {(selectedProvince
+                                {(addressData.province_id
                                     ? filteredCities
                                     : cities
                                 ).map((city) => (
@@ -199,45 +260,49 @@ const ProfilePage = () => {
                                         {city.city_name}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
+                            </DropdownSelect>
 
-                        <div>
-                            <label className="text-gray-700">
-                                Postal Code:
-                            </label>
-                            <input
+                            <InputForm
+                                label="Postal Code:"
                                 type="text"
-                                className="w-full rounded border px-3 py-2"
-                                value={postalCode}
-                                onChange={(e) => setPostalCode(e.target.value)}
+                                value={addressData.postal_code}
+                                handleChange={(value) =>
+                                    setAddressData((prev) => ({
+                                        ...prev,
+                                        postal_code: value,
+                                    }))
+                                }
                                 placeholder="Insert postal code"
                                 required
                             />
-                        </div>
 
-                        <div className="col-span-2">
-                            <label className="text-gray-700">Street:</label>
-                            <textarea
-                                className="w-full rounded border px-3 py-2"
-                                rows="2"
-                                value={street}
-                                onChange={(e) => setStreet(e.target.value)}
+                            <InputForm
+                                label="Street:"
+                                type="textarea"
+                                className="col-span-2"
+                                value={addressData.street_address}
+                                handleChange={(value) =>
+                                    setAddressData((prev) => ({
+                                        ...prev,
+                                        street_address: value,
+                                    }))
+                                }
                                 placeholder="Insert street detail"
                                 required
                             />
                         </div>
-                    </div>
 
-                    <button
-                        type="submit"
-                        className="mt-4 rounded bg-gray-600 px-4 py-2 text-white hover:bg-gray-700 disabled:bg-gray-400"
-                        disabled={loading}
-                    >
-                        {loading ? "Saving..." : "Save"}
-                    </button>
-                </form>
-            </div>
+                        <Button
+                            className="mt-2"
+                            type="submit"
+                            theme="gray"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Saving..." : "Save"}
+                        </Button>
+                    </form>
+                </div>
+            </PopupWrapper>
         </div>
     );
 };
