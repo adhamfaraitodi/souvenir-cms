@@ -14,15 +14,6 @@ const ProfilePage = () => {
     const [filteredCities, setFilteredCities] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    useEffect(() => {
-        if (addresses && addresses.length > 0) {
-            const currentAddress = addresses[0];
-            setStreet(currentAddress.street_address || "");
-            setPostalCode(currentAddress.postal_code || "");
-            setSelectedCity(currentAddress.city_id || "");
-            setSelectedProvince(currentAddress.province_id || "");
-        }
-    }, [addresses]);
 
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
@@ -93,7 +84,7 @@ const ProfilePage = () => {
             if (response.data.success) {
                 window.location.reload();
             } else {
-                setError(response.data.message || "Failed to save address");
+                setError("Failed to save address");
             }
         } catch (err) {
             setError(
