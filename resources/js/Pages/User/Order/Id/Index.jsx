@@ -8,9 +8,11 @@ import Button from "../../../../components/Button";
 import DropdownSelect from "../../../../components/DropdownSelect";
 import classNames from "classnames";
 
-const Page = ({ user,order, addresses, officeAddress }) => {
+const Page = ({ user,order, addresses, officeAddress,couriers }) => {
     const [quantity, setQuantity] = useState(order.qty);
-    const [selectedCourier, setSelectedCourier] = useState("jne");
+    const [selectedCourier, setSelectedCourier] = useState(
+        order.courier_name || "jne"
+    );
     const [selectedAddress, setSelectedAddress] = useState(
         addresses[0]?.city_id || "",
     );
@@ -18,13 +20,12 @@ const Page = ({ user,order, addresses, officeAddress }) => {
     const [loading, setLoading] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [note, setNote] = useState("");
-
     const fetchShippingCost = async () => {
         setLoading(true);
         try {
             const response = await axios.post("/api/check-ongkir", {
-                origin: officeAddress.city_id,
-                destination: selectedAddress,
+                origin: String(officeAddress.city_id),
+                destination: String(selectedAddress),
                 weight: order?.product?.weight * quantity || 0,
                 courier: selectedCourier,
             });
@@ -175,8 +176,11 @@ const Page = ({ user,order, addresses, officeAddress }) => {
                     value={selectedCourier}
                     onChange={setSelectedCourier}
                 >
-                    <option value="jne">JNE</option>
-                    <option value="pos">POS Indonesia</option>
+                    {couriers.map((courier) => (
+                        <option key={courier.value} value={courier.value}>
+                            {courier.label}
+                        </option>
+                    ))}
                 </DropdownSelect>
                 <DropdownSelect
                     className="mt-4"

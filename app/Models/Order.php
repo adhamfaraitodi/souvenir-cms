@@ -42,7 +42,7 @@ class Order extends Model
 
     public function delivery()
     {
-        return $this->hasOne(Delivery::class,'delivery_id');
+        return $this->hasOne(Delivery::class, 'order_id', 'id');
     }
     public function payment()
     {

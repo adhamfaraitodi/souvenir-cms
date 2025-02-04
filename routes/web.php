@@ -36,6 +36,9 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/orders/{id}',[UserOrderController::class,'edit'])->name('orders.edit');
     Route::get('/payment',[PaymentController::class,'show'])->name('payment.show');
     Route::get('/account/profile',[AccountController::class,'index'])->name('account.index');
+    Route::post('/create-address',[AccountController::class,'create'])->name('account.create');
+    Route::get('/edit-address/{id}', [AccountController::class, 'edit'])->name('address.edit');
+    Route::post('/update-address/{id}', [AccountController::class, 'update'])->name('address.update');
     Route::get('/account/setting',[AccountController::class,'settings'])->name('account.setting');
     Route::resource('landing-page', UserLandingPageController::class);
     Route::resource('products', UserProductController::class);

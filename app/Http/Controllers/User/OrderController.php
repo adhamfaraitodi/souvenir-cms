@@ -30,7 +30,6 @@ class OrderController extends Controller
     }
     public function create(Request $request, $product_id)
     {
-        // Validate the request
         $request->validate([
             'qty' => 'required|integer|min:1',
         ]);
@@ -73,10 +72,10 @@ class OrderController extends Controller
 
     public function edit(string $orderCode)
     {
-        $order = Order::with(['product.category', 'user.addresses'])->where('order_code', $orderCode)->firstOrFail();
+        $order = Order::with(['product.category', 'user.addresses.city.province', 'delivery'])->where('order_code', $orderCode)->firstOrFail();
         $user = $order->user;
         $addresses = $user->addresses;
-        $officeAddress = OfficeAddress::first(['city_id']);
+        $officeAddress = OfficeAddress::with('city.province')->first();
 
         $data = [
             'user' => collect($user)->only(['name', 'email', 'phone']),
@@ -91,13 +90,30 @@ class OrderController extends Controller
                         'category' => $order->product->category->name,
                         'image' => $order->product->product_image,
                     ]),
+                'courier_name' => $order->delivery ? $order->delivery->courier_name : null,
             ],
-            'addresses' => $addresses->map(fn($address) => collect($address)->only([
-                'id', 'province_name', 'city_id', 'city_name', 'postal_code', 'street_address'
-            ])),
+            'addresses' => $addresses->map(fn($address) => [
+                'id' => $address->id,
+                'province_name' => optional($address->city->province)->province_name,
+                'city_id' => $address->city_id,
+                'city_name' => optional($address->city)->city_name,
+                'postal_code' => $address->postal_code,
+                'street_address' => $address->street_address,
+            ]),
             'officeAddress' => $officeAddress ? ['city_id' => $officeAddress->city_id] : null,
+            'couriers' => $this->getCouriers(),
         ];
-
         return Inertia::render('User/Order/Id/Index', $data);
     }
+    private function getCouriers()
+    {
+        return [
+            ['value' => 'jne', 'label' => 'JNE'],
+            ['value' => 'pos', 'label' => 'POS Indonesia'],
+            ['value' => 'sap', 'label' => 'SAP Express'],
+            ['value' => 'jnt', 'label' => 'J&T Express'],
+            ['value' => 'ninja', 'label' => 'Ninja Express'],
+        ];
+    }
+
 }

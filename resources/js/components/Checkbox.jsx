@@ -1,9 +1,9 @@
-import className from "classnames";
+import classNames from "classnames";
 
 const Checkbox = ({ label, handleChange, className, name }) => {
     return (
         <div
-            className={className("flex flex-row items-center gap-2", className)}
+            className={classNames("flex flex-row items-center gap-2", className)}
         >
             <input
                 type="checkbox"
