@@ -14,18 +14,14 @@ const EditAddressForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Initialize form with existing address data
     useEffect(() => {
         if (address) {
             setStreet(address.street_address || "");
             setPostalCode(address.postal_code || "");
             setSelectedCity(address.city_id?.toString() || "");
-
-            // Find and set the province based on the city
             const city = cities.find(c => c.id === address.city_id);
             if (city) {
                 setSelectedProvince(city.province_id.toString());
-                // Filter cities for this province
                 const citiesInProvince = cities.filter(
                     c => c.province_id === city.province_id
                 );
@@ -70,7 +66,6 @@ const EditAddressForm = () => {
         setLoading(true);
         setError("");
 
-        // Validation
         if (!selectedProvince || !selectedCity || !postalCode || !street) {
             setError("Please fill in all fields");
             setLoading(false);
@@ -83,19 +78,8 @@ const EditAddressForm = () => {
                 city_id: selectedCity,
                 postal_code: postalCode,
                 street_address: street
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
             });
-
-            if (response.data.success) {
                 window.location.href = '/account/profile';
-            } else {
-                setError(response.data.message || "Failed to update address");
-            }
         } catch (err) {
             console.error("Update Error:", err);
             setError(err.response?.data?.message || "An error occurred while updating the address");

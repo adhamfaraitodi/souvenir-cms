@@ -13,15 +13,6 @@ const ProfilePage = () => {
     const [filteredCities, setFilteredCities] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    useEffect(() => {
-        if (addresses && addresses.length > 0) {
-            const currentAddress = addresses[0];
-            setStreet(currentAddress.street_address || "");
-            setPostalCode(currentAddress.postal_code || "");
-            setSelectedCity(currentAddress.city_id || "");
-            setSelectedProvince(currentAddress.province_id || "");
-        }
-    }, [addresses]);
 
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
@@ -73,18 +64,12 @@ const ProfilePage = () => {
                 city_id: selectedCity,
                 postal_code: postalCode,
                 street_address: street
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
             });
 
             if (response.data.success) {
                 window.location.reload();
             } else {
-                setError(response.data.message || "Failed to save address");
+                setError("Failed to save address");
             }
         } catch (err) {
             setError(err.response?.data?.message || "An error occurred while saving the address");
@@ -92,6 +77,7 @@ const ProfilePage = () => {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-md">

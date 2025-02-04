@@ -31,8 +31,7 @@ class AccountController extends Controller
                     'city_name' => optional($address->city)->city_name,
                     'province_name' => optional($address->city->province)->province_name,
                 ];
-            })
-            : [];
+            }) : [];
 
         return Inertia::render('User/Account/Profile', [
             'user' => collect($data)->only(['id', 'name', 'email', 'phone']),
@@ -43,14 +42,13 @@ class AccountController extends Controller
     }
 
     public function create(Request $request) {
+        $validated = $request->validate([
+            'province_id' => 'required|exists:provinces,id',
+            'city_id' => 'required|exists:cities,id',
+            'postal_code' => 'required|string|max:5',
+            'street_address' => 'required|string'
+        ]);
         try {
-            $validated = $request->validate([
-                'province_id' => 'required|exists:provinces,id',
-                'city_id' => 'required|exists:cities,id',
-                'postal_code' => 'required|string|max:5',
-                'street_address' => 'required|string'
-            ]);
-
             Address::create([
                 'user_id' => Auth::user()->id,
                 'city_id' => $request->city_id,
@@ -59,16 +57,7 @@ class AccountController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
-
-            return redirect()->route('account.index');
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-
+            return response()->json(['success' => true, 'message' => 'Address saved successfully']);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -99,13 +88,13 @@ class AccountController extends Controller
     }
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'province_id' => 'required|exists:provinces,id',
+            'city_id' => 'required|exists:cities,id',
+            'postal_code' => 'required|string|max:5',
+            'street_address' => 'required|string'
+        ]);
         try {
-            $validated = $request->validate([
-                'province_id' => 'required|exists:provinces,id',
-                'city_id' => 'required|exists:cities,id',
-                'postal_code' => 'required|string|max:5',
-                'street_address' => 'required|string'
-            ]);
             $address = Address::where('id', $id)
                 ->where('user_id', Auth::user()->id)
                 ->firstOrFail();
@@ -118,16 +107,7 @@ class AccountController extends Controller
                 'success' => true,
                 'message' => 'Address updated successfully'
             ], 200);
-
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-
-        } catch (\Exception $e) {
+        }catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update address',
