@@ -13,7 +13,7 @@ const ProfilePage = () => {
     const [filteredCities, setFilteredCities] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
+console.log(addresses)
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
         setSelectedProvince(provinceId);

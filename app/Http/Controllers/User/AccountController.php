@@ -29,6 +29,7 @@ class AccountController extends Controller
                     'postal_code' => $address->postal_code,
                     'city_id' => $address->city_id,
                     'city_name' => optional($address->city)->city_name,
+                    'province_id'=>$address->city->province->id,
                     'province_name' => optional($address->city->province)->province_name,
                 ];
             }) : [];
