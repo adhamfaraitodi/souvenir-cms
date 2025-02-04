@@ -1,6 +1,13 @@
 import classNames from "classnames";
 
-const Button = ({ onClick, type, children, theme = "default", disabled }) => {
+const Button = ({
+    onClick,
+    type,
+    children,
+    theme = "default",
+    disabled,
+    className,
+}) => {
     const themeClassName = {
         default: `bg-blue-600 text-white hover:bg-blue-500`,
         danger: `bg-red-600 text-white hover:bg-red-500`,
@@ -15,6 +22,7 @@ const Button = ({ onClick, type, children, theme = "default", disabled }) => {
                 themeClassName[theme],
                 `focus:shadow-outline w-full rounded-lg px-4 py-2 font-bold transition duration-300 focus:outline-none`,
                 disabled ? "opacity-80" : "",
+                className,
             )}
             type={type}
         >
