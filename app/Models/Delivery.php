@@ -14,6 +14,10 @@ class Delivery extends Model
         'courier_name',
         'tracking_number',
         'shipping_status',
+        'origin',
+        'origin_name',
+        'destination',
+        'destination_name',
         'created_at',
         'updated_at',
     ];

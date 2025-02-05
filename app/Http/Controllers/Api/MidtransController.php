@@ -84,9 +84,9 @@ class MidtransController extends Controller
     {
         $statusMap = [
             'settlement' => 'paid',
-            'deny' => 'failed',
-            'cancel' => 'cancelled',
-            'expire' => 'cancelled',
+            'deny' => 'canceled',
+            'cancel' => 'canceled',
+            'expire' => 'canceled',
             'pending' => 'pending',
         ];
 

@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('courier_name', 50);
             $table->string('tracking_number', 100);
             $table->enum('shipping_status', ['shipped', 'delivered']);
+            $table->text('origin');
+            $table->string('origin_name',30);
+            $table->text('destination');
+            $table->string('destination',30);
             $table->timestamps();
         });
     }
