@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\OfficeAddress;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -76,7 +75,7 @@ class OrderController extends Controller
         $user = $order->user;
         $addresses = $user->addresses;
         $officeAddress = OfficeAddress::with('city.province')->first();
-
+        $delivery = $order->delivery;
         $data = [
             'user' => collect($user)->only(['name', 'email', 'phone']),
             'order' => [
@@ -90,7 +89,15 @@ class OrderController extends Controller
                         'category' => $order->product->category->name,
                         'image' => $order->product->product_image,
                     ]),
-                'courier_name' => $order->delivery ? $order->delivery->courier_name : null,
+                'delivery' => $delivery ? [
+                    'courier_name' => $delivery->courier_name,
+                    'tracking_number' => $delivery->tracking_number,
+                    'shipping_status' => $delivery->shipping_status,
+                    'origin' => $delivery->origin,
+                    'origin_name' => $delivery->origin_name,
+                    'destination' => $delivery->destination,
+                    'destination_name' => $delivery->destination_name,
+                ] : null,
             ],
             'addresses' => $addresses->map(fn($address) => [
                 'id' => $address->id,
@@ -100,7 +107,14 @@ class OrderController extends Controller
                 'postal_code' => $address->postal_code,
                 'street_address' => $address->street_address,
             ]),
-            'officeAddress' => $officeAddress ? ['city_id' => $officeAddress->city_id] : null,
+            'officeAddress' => [
+                'id' => $officeAddress->id,
+                'province_name' => optional($officeAddress->city->province)->province_name,
+                'city_id' => $officeAddress->city_id,
+                'city_name' => optional($officeAddress->city)->city_name,
+                'postal_code' => $officeAddress->postal_code,
+                'street_address' => $officeAddress->street_address,
+            ],
             'couriers' => $this->getCouriers(),
         ];
         return Inertia::render('User/Order/Id/Index', $data);

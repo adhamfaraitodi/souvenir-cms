@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Models\Delivery;
+use App\Models\OfficeAddress;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -44,6 +46,9 @@ class PaymentController extends Controller
             'shipping_cost' => 'required',
             'courier' => 'required',
             'gross'=>'required',
+            'note'=>'nullable|max:1000',
+            'origin'=>'required',
+            'destination'=>'required',
         ]);
         $order = Order::where('id', $request->order_id)->first();
         if ($order) {
@@ -53,19 +58,39 @@ class PaymentController extends Controller
                 'total_price' => ($order->product_price * $request->quantity) + $request->shipping_cost,
                 'note'=>$request->note,
             ]);
+            $originData = $this->getFormattedOfficeAddress($request->origin);
+            $destinationData = $this->getFormattedAddress($request->destination);
             Delivery::updateOrCreate(
                 ['order_id' => $order->id],
                 [
                     'courier_name' => $request->courier,
-                    'tracking_number' => 'jneselalu',
-                    'shipping_status' => 'shipped'
+                    'shipping_status' => 'pending',
+                    'origin'=>$originData,
+                    'origin_name'=>'PT. Indah', //hardcode dulu nanti dinamik pakai admin name or record for office information
+                    'destination'=>$destinationData,
+                    'destination_name'=>$request->customer_name,
                 ]
             );
         } else {
             throw new \Exception('Order not found');
         }
     }
-
+    private function getFormattedAddress($addressId)
+    {
+        $address = Address::with('city.province')->find($addressId)->first();
+        if (!$address) {
+            throw new \Exception('Address not found');
+        }
+        return "{$address->street_address}, {$address->city->city_name}, {$address->city->province->province_name} - {$address->postal_code}";
+    }
+    private function getFormattedOfficeAddress($addressId)
+    {
+        $address = OfficeAddress::with('city.province')->find($addressId)->first();
+        if (!$address) {
+            throw new \Exception('Address not found');
+        }
+        return "{$address->street_address}, {$address->city->city_name}, {$address->city->province->province_name} - {$address->postal_code}";
+    }
     private function generateSnapToken(Request $request)
     {
         $transactionDetails = [

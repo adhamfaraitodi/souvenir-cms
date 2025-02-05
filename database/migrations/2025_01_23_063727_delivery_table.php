@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
             $table->string('courier_name', 50);
-            $table->string('tracking_number', 100);
-            $table->enum('shipping_status', ['shipped', 'delivered']);
+            $table->string('tracking_number', 100)->nullable();
+            $table->enum('shipping_status', ['pending','shipped', 'delivered']);
             $table->text('origin');
             $table->string('origin_name',30);
             $table->text('destination');
-            $table->string('destination',30);
+            $table->string('destination_name',30);
             $table->timestamps();
         });
     }

@@ -40,26 +40,36 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
     const handleFinishOrder = async () => {
         setPaymentLoading(true);
         try {
+            const selectedAddressObject = addresses.find(
+                address => address.city_id === selectedAddress
+            );
+            if (!selectedAddressObject) {
+                throw new Error('Please select a valid delivery address');
+            }
             const payload = {
-                order_id:order.id,
+                order_id: order.id,
                 order_code: order.order_code,
                 customer_name: user.name,
                 customer_email: user.email,
                 quantity: quantity,
                 shipping_cost: shippingCost,
                 courier: selectedCourier,
-                gross:totalCost,
+                gross: totalCost,
                 note: note,
+                origin: officeAddress.id,
+                destination: selectedAddressObject.id,
             };
+            console.log("Payload:", payload);
             const response = await axios.post("/api/create-payment", payload);
             window.location.href = `/payment?snap_token=${response.data.snap_token}&order_code=${order.order_code}`;
         } catch (error) {
             console.error("Error creating payment:", error);
-            alert("Failed to create payment. Please try again.");
+            alert(error.message || "Failed to create payment. Please try again.");
         } finally {
             setPaymentLoading(false);
         }
     };
+
     const orderStatusClasses = {
         completed: "bg-green-100 text-green-700",
         pending: "bg-red-100 text-red-700",
