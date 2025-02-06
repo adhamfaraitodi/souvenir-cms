@@ -12,11 +12,13 @@ class ProductController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $custom= Product::where('type', 'custom')
+        ->where('for', $user->id)
+        ->get();
+        $retail=Product::where('type', 'retail')->get();
         return Inertia::render('User/Product/Index', [
-            'customProducts' => Product::where('type', 'custom')
-                ->where('for', $user->id)
-                ->get(),
-            'retailProducts' => Product::where('type', 'retail')->get(),
+            'customProducts' =>$custom,
+            'retailProducts' => $retail,
         ]);
     }
     public function show(string $id)

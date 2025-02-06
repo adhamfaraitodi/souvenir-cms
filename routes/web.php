@@ -40,9 +40,16 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/edit-address/{id}', [AccountController::class, 'edit'])->name('address.edit');
     Route::post('/update-address/{id}', [AccountController::class, 'update'])->name('address.update');
     Route::get('/account/setting',[AccountController::class,'settings'])->name('account.setting');
-    Route::resource('landing-page', UserLandingPageController::class);
+    Route::get('landing-page',[UserLandingPageController::class,'index'])->name('landing.page.index');
+    Route::get('landing-page/edit/{id}',[UserLandingPageController::class,'edit'])->name('landing.page.edit');
+    Route::post('landing-page/update/{id}',[UserLandingPageController::class,'update'])->name('landing.page.update');
+    Route::get('landing-page/project-edit/{id}',[UserLandingPageController::class,'projectEdit'])->name('landing.page.project.edit');
+    Route::put('landing-page/project-update/{id}',[UserLandingPageController::class,'projectUpdate'])->name('landing.page.project.update');
+    Route::get('landing-page/preview/{id}',[UserLandingPageController::class,'show'])->name('landing.page.show');
+    Route::get('landing-page/share/{id}',[UserLandingPageController::class,'share'])->name('landing.page.share');
     Route::resource('products', UserProductController::class);
 });
+Route::get('/share/project/{projectUrl}', [UserLandingPageController::class, 'shareProject'])->name('landing.page.share.project');
 //Admin routes
 Route::prefix('admin')->name('admin.')->middleware('is_admin')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'Index'])->name('home');

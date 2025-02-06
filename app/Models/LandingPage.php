@@ -12,14 +12,15 @@ class LandingPage extends Model
     protected $fillable = [
         'theme_id',
         'title',
-        'landing_page_url',
+        'landing_page_code',
+        'url',
         'html_code',
         'css_code',
         'created_at',
         'updated_at',
     ];
 
-    public function orders()
+    public function order()
     {
         return $this->hasOne(Order::class, 'landing_page_id');
     }

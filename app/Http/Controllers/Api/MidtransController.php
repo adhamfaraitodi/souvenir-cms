@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\LandingPage;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Theme;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class MidtransController extends Controller
 {
@@ -94,6 +97,65 @@ class MidtransController extends Controller
             $order->update(['order_status' => $statusMap[$transaction_status]]);
         }
     }
+    private function handleLandingPageCreation(Order $order, string $transaction_status): void
+    {
+        if ($transaction_status !== 'settlement') {
+            return;
+        }
+        $theme = Theme::find(1);
+        if (!$theme) {
+            Log::error('Default theme not found for landing page creation', [
+                'order_code' => $order->order_code
+            ]);
+            return;
+        }
+        $landingPageCode = $this->generateUniqueLandingPageCode();
+        $landingPageUrl = $this->generateUniqueLandingPageUrl();
+        $landingPage = Landingpage::create([
+            'theme_id' => 1,
+            'title' => 'Untitled',
+            'landing_page_code' => $landingPageCode,
+            'url'=>$landingPageUrl,
+            'html_code' => $theme->html_code,
+            'css_code' => $theme->css_code,
+        ]);
+        $order->update([
+            'landing_page_id' => $landingPage->id
+        ]);
+    }
+
+    private function generateUniqueLandingPageCode(): string
+    {
+        $maxAttempts = 5;
+        $attempt = 0;
+
+        do {
+            if ($attempt >= $maxAttempts) {
+                throw new \Exception('Unable to generate unique landing page code after ' . $maxAttempts . ' attempts');
+            }
+            $randomString = Str::random(10);
+            $exists = Landingpage::where('landing_page_code', $randomString)->exists();
+            $attempt++;
+        } while ($exists);
+
+        return $randomString;
+    }
+    private function generateUniqueLandingPageUrl(): string
+    {
+        $maxAttempts = 5;
+        $attempt = 0;
+
+        do {
+            if ($attempt >= $maxAttempts) {
+                throw new \Exception('Unable to generate unique landing page URL after ' . $maxAttempts . ' attempts');
+            }
+            $randomString = Str::random(17);
+            $exists = Landingpage::where('url', $randomString)->exists();
+            $attempt++;
+        } while ($exists);
+
+        return $randomString;
+    }
 
     public function getWebhook(Request $request)
     {
@@ -126,7 +188,7 @@ class MidtransController extends Controller
             }
             $payment = $this->createPayment($order, $data);
             $this->updateOrderStatus($order, $data['transaction_status']);
-
+            $this->handleLandingPageCreation($order, $data['transaction_status']);
             return response()->json(['message' => 'Webhook processed successfully'], 200);
 
         } catch (\Exception $e) {
