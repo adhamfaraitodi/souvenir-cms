@@ -8,10 +8,10 @@ import Button from "../../../../components/Button";
 import DropdownSelect from "../../../../components/DropdownSelect";
 import classNames from "classnames";
 
-const Page = ({ user,order, addresses, officeAddress,couriers }) => {
+const Page = ({ user, order, addresses, officeAddress, couriers }) => {
     const [quantity, setQuantity] = useState(order.qty);
     const [selectedCourier, setSelectedCourier] = useState(
-        order.courier_name || "jne"
+        order.courier_name || "jne",
     );
     const [selectedAddress, setSelectedAddress] = useState(
         addresses[0]?.city_id || "",
@@ -41,10 +41,10 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
         setPaymentLoading(true);
         try {
             const selectedAddressObject = addresses.find(
-                address => address.city_id === selectedAddress
+                (address) => address.city_id === selectedAddress,
             );
             if (!selectedAddressObject) {
-                throw new Error('Please select a valid delivery address');
+                throw new Error("Please select a valid delivery address");
             }
             const payload = {
                 order_id: order.id,
@@ -64,7 +64,9 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
             window.location.href = `/payment?snap_token=${response.data.snap_token}&order_code=${order.order_code}`;
         } catch (error) {
             console.error("Error creating payment:", error);
-            alert(error.message || "Failed to create payment. Please try again.");
+            alert(
+                error.message || "Failed to create payment. Please try again.",
+            );
         } finally {
             setPaymentLoading(false);
         }
@@ -91,7 +93,7 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
         <div className="container mx-auto p-4">
             <div className="mb-4 rounded-lg border bg-white p-4 shadow-md">
                 <h2 className="mb-2 text-lg font-bold">Order Details</h2>
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-col justify-between gap-2 md:flex-row">
                     <div className="flex flex-col gap-1">
                         <div className="flex flex-row gap-2">
                             <p className="text-gray-500">Invoice:</p>
@@ -134,7 +136,9 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
                                 onClick={handleFinishOrder}
                                 disabled={paymentLoading}
                             >
-                                {paymentLoading ? "Processing..." : "Finish Order"}
+                                {paymentLoading
+                                    ? "Processing..."
+                                    : "Finish Order"}
                             </Button>
                         </div>
                     ) : null}
@@ -158,7 +162,10 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
                         <p>Weight: {order.product.weight * quantity} gram</p>
                         <p>Package: {order.product.package}</p>
                         <p className="font-bold">
-                            {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(productPrice)}
+                            {new Intl.NumberFormat("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                            }).format(productPrice)}
                         </p>
                         <QuantityChanger
                             disabled={order.order_status !== "pending"}
@@ -212,14 +219,19 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
                 <h3 className="mb-2 text-lg font-bold">Payment Details</h3>
                 <div className="flex justify-between">
                     <span>Product Price</span>
-                    <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(productPrice)}</span>
+                    <span>
+                        {new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                        }).format(productPrice)}
+                    </span>
                 </div>
                 <div className="flex justify-between">
                     <span>Delivery Price</span>
                     <span>
                         {loading
                             ? "Loading..."
-                            : `${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(shippingCost)}`}
+                            : `${new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(shippingCost)}`}
                     </span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
@@ -227,7 +239,7 @@ const Page = ({ user,order, addresses, officeAddress,couriers }) => {
                     <span>
                         {loading
                             ? "Loading..."
-                            : `${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalCost)}`}
+                            : `${new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(totalCost)}`}
                     </span>
                 </div>
             </div>
