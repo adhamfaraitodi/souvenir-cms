@@ -40,12 +40,6 @@ const Page = ({ user, order, addresses, officeAddress, couriers }) => {
     const handleFinishOrder = async () => {
         setPaymentLoading(true);
         try {
-            const selectedAddressObject = addresses.find(
-                (address) => address.city_id === selectedAddress,
-            );
-            if (!selectedAddressObject) {
-                throw new Error("Please select a valid delivery address");
-            }
             const payload = {
                 order_id: order.id,
                 order_code: order.order_code,
@@ -57,9 +51,9 @@ const Page = ({ user, order, addresses, officeAddress, couriers }) => {
                 gross: totalCost,
                 note: note,
                 origin: officeAddress.id,
-                destination: selectedAddressObject.id,
+                destination:note,
             };
-            console.log("Payload:", payload);
+            console.log(payload)
             const response = await axios.post("/api/create-payment", payload);
             window.location.href = `/payment?snap_token=${response.data.snap_token}&order_code=${order.order_code}`;
         } catch (error) {

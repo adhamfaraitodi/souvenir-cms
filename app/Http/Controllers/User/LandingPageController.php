@@ -14,13 +14,14 @@ class LandingPageController extends Controller
     public function index()
     {
         $userId=Auth::user()->id;
+        $themes= Theme::all();
         $landingPages = LandingPage::whereHas('order', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })
             ->with(['theme:id,title,html_code,css_code'])
             ->get(['id', 'theme_id','title', 'landing_page_code','url', 'html_code', 'css_code']);
 
-        return Inertia::render('User/LandingPage/Index', ['landingPages' => $landingPages]);
+        return Inertia::render('User/LandingPage/Index', ['landingPages' => $landingPages,'themes'=>$themes]);
     }
     public function edit(string $id)
     {
