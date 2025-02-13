@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../../components/Layout";
 import { userMenus } from "../../../libs/menus";
 import Title from "@/components/Title.jsx";
@@ -8,6 +8,7 @@ import DropdownSelect from "../../../components/DropdownSelect";
 import Button from "../../../components/Button";
 import LandingPageCard from "../../../components/Card/LandingPageCard";
 import { QRCodeCanvas } from "qrcode.react";
+import { useForm } from "@inertiajs/react";
 
 const Page = ({ landingPages, themes }) => {
     const [isEditPopupVisible, setEditPopupVisible] = useState(false);
@@ -34,8 +35,23 @@ const Page = ({ landingPages, themes }) => {
         setCurrentPage(null);
     };
 
+    const { data, setData, put, processing, errors } = useForm({
+        title: "",
+        theme_id: "",
+    });
+
+    useEffect(() => {
+        if (currentPage) {
+            setData("title", currentPage.title);
+            setData("theme_id", currentPage.theme_id);
+        }
+    }, [currentPage, setData]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        put(`/landing-page/project-update/${currentPage.id}`, data, {
+            preserveScroll: true,
+        });
         handleCloseEditPopup();
     };
 
@@ -76,25 +92,17 @@ const Page = ({ landingPages, themes }) => {
                             <InputForm
                                 label="Landing Page Title"
                                 handleChange={(value) =>
-                                    setCurrentPage({
-                                        ...currentPage,
-                                        title: value,
-                                    })
+                                    setData("title", value)
                                 }
-                                value={currentPage.title}
+                                value={data.title}
                                 required
                                 placeholder="Enter landing page title"
                                 className="mb-4 w-full"
                             />
                             <DropdownSelect
                                 label="Select Theme"
-                                value={currentPage.theme_id}
-                                onChange={(value) =>
-                                    setCurrentPage({
-                                        ...currentPage,
-                                        theme_id: value,
-                                    })
-                                }
+                                value={data.theme_id}
+                                onChange={(value) => setData("theme_id", value)}
                                 required
                                 className="mb-4 w-full"
                             >
@@ -106,8 +114,12 @@ const Page = ({ landingPages, themes }) => {
                                 ))}
                             </DropdownSelect>
                             <div className="mb-4 flex justify-end">
-                                <Button type="submit" theme="default">
-                                    Save Changes
+                                <Button
+                                    type="submit"
+                                    theme="default"
+                                    disabled={processing}
+                                >
+                                    {processing ? "Saving..." : "Save Changes"}
                                 </Button>
                             </div>
                         </form>
