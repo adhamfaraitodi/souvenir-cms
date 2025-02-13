@@ -40,6 +40,7 @@ const Page = ({ user, order, addresses, officeAddress, couriers }) => {
     const handleFinishOrder = async () => {
         setPaymentLoading(true);
         try {
+            const selectedAddressObj = addresses.find(addr => addr.city_id === selectedAddress);
             const payload = {
                 order_id: order.id,
                 order_code: order.order_code,
@@ -51,7 +52,7 @@ const Page = ({ user, order, addresses, officeAddress, couriers }) => {
                 gross: totalCost,
                 note: note,
                 origin: officeAddress.id,
-                destination:note,
+                destination: selectedAddressObj ? selectedAddressObj.id : null,
             };
             console.log(payload)
             const response = await axios.post("/api/create-payment", payload);
