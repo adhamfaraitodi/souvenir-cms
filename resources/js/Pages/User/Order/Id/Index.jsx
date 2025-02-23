@@ -78,8 +78,13 @@ const Page = ({ user, order, addresses, officeAddress, couriers }) => {
     };
 
     useEffect(() => {
-        fetchShippingCost();
+        if (order?.product?.delivery_fee !== null && order?.product?.delivery_fee !== undefined) {
+            setShippingCost(order.product.delivery_fee);
+        } else {
+            fetchShippingCost();
+        }
     }, [selectedAddress, quantity, selectedCourier]);
+
 
     const productPrice = order?.price || 0;
     const totalCost = productPrice * quantity + shippingCost;

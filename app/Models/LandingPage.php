@@ -14,6 +14,7 @@ class LandingPage extends Model
         'title',
         'landing_page_code',
         'url',
+        'url_redirect',
         'html_code',
         'css_code',
         'created_at',
@@ -27,5 +28,9 @@ class LandingPage extends Model
     public function Theme()
     {
         return $this->belongsTo(Theme::class,'theme_id');
+    }
+    public function report()
+    {
+        return $this->hasMany(LandingPageReport::class, 'landing_page_id');
     }
 }

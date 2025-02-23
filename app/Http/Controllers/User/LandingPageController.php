@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\LandingPage;
+use App\Models\LandingPageReport;
 use App\Models\Theme;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,6 @@ class LandingPageController extends Controller
         })
             ->with(['theme:id,title,html_code,css_code'])
             ->get(['id', 'theme_id','title', 'landing_page_code','url', 'html_code', 'css_code']);
-
         return Inertia::render('User/LandingPage/Index', ['landingPages' => $landingPages,'themes'=>$themes]);
     }
     public function edit(string $id)
@@ -42,14 +42,11 @@ class LandingPageController extends Controller
     public function update(Request $request,string $id)
     {
         $landingPage = LandingPage::findOrFail($id);
-
         $validated = $request->validate([
             'html_code' => 'required|string',
             'css_code' => 'required|string',
         ]);
-
         $landingPage->update($validated);
-
         return redirect()->route('user.landing.page.index');
     }
     public function projectEdit(string $id)
@@ -98,7 +95,7 @@ class LandingPageController extends Controller
         return redirect()->route('user.landing.page.index')
             ->with('success', 'Landing page updated successfully');
     }
-
+    // maybe it is not automatic yet
     public function share(string $id)
     {
         $landingPage = LandingPage::where('landing_page_code', $id)
@@ -119,14 +116,56 @@ class LandingPageController extends Controller
             'css_code' => $landingPage->css_code,
         ]);
     }
-    public function shareProject(string $id)
+
+    public function shareProject(Request $request,string $id)
     {
         $landingPage = LandingPage::where('url', $id)
-            ->select('html_code', 'css_code')
+            ->select('html_code', 'css_code', 'id', 'url_redirect')
             ->firstOrFail();
+        if ($landingPage->url_redirect) {
+            return redirect()->away($landingPage->url_redirect);
+        }
+        $utmParams = [
+            'utm_source'   => $request->query('utm_source'),
+            'utm_medium'   => $request->query('utm_medium'),
+            'utm_campaign' => $request->query('utm_campaign'),
+        ];
         return Inertia::render('User/LandingPage/Id/Shared', [
+            'id' => $landingPage->id,
             'html_code' => $landingPage->html_code,
             'css_code' => $landingPage->css_code,
+            'utm' => $utmParams,
         ]);
+    }
+    public function reportAbuse(Request $request){
+        $request->validate([
+            'id' => 'required|exists:landing_pages,id',
+            'reason' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        LandingPageReport::create([
+            'landing_page_id' => $request->id,
+            'reason' => $request->reason,
+            'description' => $request->description,
+            'ip_address' => $request->ip(),
+        ]);
+
+        return redirect()->back()->with('success', 'Report submitted successfully.');
+    }
+    public function setUrl(Request $request, string $id){
+        $request->validate([
+            'url' => 'required|string|unique:landing_pages,url',
+            'url_redirect' => 'sometimes|nullable|string'
+        ]);
+
+        $landingPage = LandingPage::findOrFail($id);
+        $landingPage->update([
+            'url' => $request->url,
+            'url_redirect' => $request->url_redirect
+        ]);
+
+        return redirect()->route('user.landing.page.index')
+            ->with('success', 'Landing page updated successfully');
     }
 }

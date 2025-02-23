@@ -35,31 +35,29 @@ class OrderController extends Controller
 
         try {
             $product = Product::findOrFail($product_id);
-            $orderCode = $this->generateUniqueOrderId();
             $user = Auth::user();
+            $orderCode = $this->generateUniqueOrderId();
             $qty = $request->qty;
             $total = $qty * $product->price;
-            DB::beginTransaction();
 
-            $order = Order::create([
-                'order_code' => $orderCode,
-                'user_id' => $user->id,
-                'product_id' => $product->id,
-                'landing_page_id' => null,
-                'qty' => $qty,
-                'product_price' => $product->price,
-                'total_price' => $total,
-                'order_status' => "pending",
-            ]);
-
-            DB::commit();
+            $order = DB::transaction(function () use ($user, $product, $orderCode, $qty, $total) {
+                return Order::create([
+                    'order_code' => $orderCode,
+                    'user_id' => $user->id,
+                    'product_id' => $product->id,
+                    'qty' => $qty,
+                    'product_price' => $product->price,
+                    'total_price' => $total,
+                    'order_status' => 'pending',
+                ]);
+            });
 
             return redirect()->route('user.orders.edit', $order->order_code);
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()->withErrors(['error' => 'Failed to create order. Please try again.']);
         }
     }
+
 
     private function generateUniqueOrderId(): string
     {
@@ -84,7 +82,7 @@ class OrderController extends Controller
                 'order_status' => $order->order_status,
                 'qty' => $order->qty,
                 'price' => $order->product_price,
-                'product' => collect($order->product)->only(['product_id', 'name', 'type', 'weight', 'package'])
+                'product' => collect($order->product)->only(['product_id', 'name', 'type', 'weight', 'package','delivery_fee'])
                     ->merge([
                         'category' => $order->product->category->name,
                         'image' => $order->product->product_image,

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('for');
             $table->text('specification');
             $table->string('brand', 30);
+            $table->bigInteger('delivery_fee')->nullable();
             $table->timestamps();
         });
     }

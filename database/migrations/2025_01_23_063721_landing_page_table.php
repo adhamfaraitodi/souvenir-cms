@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('theme_id')->constrained('themes')->noActionOnDelete();
             $table->string('title', 255);
             $table->string('landing_page_code', 255);
-            $table->string('url', 255);
+            $table->string('url', 255)->nullable();
+            $table->string('url_redirect', 255)->nullable();
             $table->text('html_code');
             $table->text('css_code');
             $table->timestamps();

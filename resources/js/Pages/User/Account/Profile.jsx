@@ -6,6 +6,7 @@ import Button from "../../../components/Button";
 import PopupWrapper from "../../../components/PopupWrapper";
 import DropdownSelect from "../../../components/DropdownSelect";
 import InputForm from "../../../components/InputForm";
+import { usePage } from "@inertiajs/react";
 
 const initialAddressState = {
     id: null,
@@ -35,6 +36,7 @@ const ProfilePage = ({ user, addresses, cities, provinces }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [editMode, setEditMode] = useState(false);
+    const { csrf_token } = usePage().props;
 
     // Use effect to handle initial city filtering when editing
     useEffect(() => {
@@ -130,10 +132,9 @@ const ProfilePage = ({ user, addresses, cities, provinces }) => {
                     headers: {
                         "Content-Type": "application/json",
                         "X-Requested-With": "XMLHttpRequest",
-                        "X-CSRF-TOKEN": document.querySelector(
-                            'meta[name="csrf-token"]',
-                        )?.content,
+                        "X-CSRF-TOKEN": csrf_token,
                     },
+                    withCredentials:true,
                 },
             );
 

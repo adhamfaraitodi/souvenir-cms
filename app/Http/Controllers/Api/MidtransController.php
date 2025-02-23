@@ -110,12 +110,10 @@ class MidtransController extends Controller
             return;
         }
         $landingPageCode = $this->generateUniqueLandingPageCode();
-        $landingPageUrl = $this->generateUniqueLandingPageUrl();
         $landingPage = Landingpage::create([
             'theme_id' => 1,
             'title' => 'Untitled',
             'landing_page_code' => $landingPageCode,
-            'url'=>$landingPageUrl,
             'html_code' => $theme->html_code,
             'css_code' => $theme->css_code,
         ]);
@@ -140,23 +138,6 @@ class MidtransController extends Controller
 
         return $randomString;
     }
-    private function generateUniqueLandingPageUrl(): string
-    {
-        $maxAttempts = 5;
-        $attempt = 0;
-
-        do {
-            if ($attempt >= $maxAttempts) {
-                throw new \Exception('Unable to generate unique landing page URL after ' . $maxAttempts . ' attempts');
-            }
-            $randomString = Str::random(17);
-            $exists = Landingpage::where('url', $randomString)->exists();
-            $attempt++;
-        } while ($exists);
-
-        return $randomString;
-    }
-
     public function getWebhook(Request $request)
     {
         try {

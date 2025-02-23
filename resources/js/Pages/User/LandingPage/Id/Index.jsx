@@ -67,7 +67,6 @@ const Page = ({ html_code, css_code }) => {
                 >
                     {processing ? "Exporting..." : "Export Template"}
                 </button>
-
                 {errors.html && (
                     <div className="mt-2 text-red-500">{errors.html}</div>
                 )}

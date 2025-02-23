@@ -30,16 +30,20 @@ Route::post('admin/logout', [AdminAuthController::class, 'globalLogout'])->name(
 // User routes
 Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/', [UserProductController::class, 'index'])->name('home');
+    // order routes
     Route::get('/orders/list',[UserOrderController::class,'index'])->name('orders.list');
     Route::get('/orders/detail/{id}',[UserOrderController::class,'show'])->name('orders.detail');
     Route::post('/orders/create/{id}',[UserOrderController::class,'create'])->name('orders.new');
     Route::get('/orders/{id}',[UserOrderController::class,'edit'])->name('orders.edit');
+    // payment routes
     Route::get('/payment',[PaymentController::class,'show'])->name('payment.show');
+    // User routes
     Route::get('/account/profile',[AccountController::class,'index'])->name('account.index');
     Route::post('/create-address',[AccountController::class,'create'])->name('account.create');
     Route::get('/edit-address/{id}', [AccountController::class, 'edit'])->name('address.edit');
     Route::post('/update-address/{id}', [AccountController::class, 'update'])->name('address.update');
     Route::get('/account/setting',[AccountController::class,'settings'])->name('account.setting');
+    // landing page routes
     Route::get('landing-page',[UserLandingPageController::class,'index'])->name('landing.page.index');
     Route::get('landing-page/edit/{id}',[UserLandingPageController::class,'edit'])->name('landing.page.edit');
     Route::post('landing-page/update/{id}',[UserLandingPageController::class,'update'])->name('landing.page.update');
@@ -47,9 +51,15 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::put('landing-page/project-update/{id}',[UserLandingPageController::class,'projectUpdate'])->name('landing.page.project.update');
     Route::get('landing-page/preview/{id}',[UserLandingPageController::class,'show'])->name('landing.page.show');
     Route::get('landing-page/share/{id}',[UserLandingPageController::class,'share'])->name('landing.page.share');
+    Route::post('landing-page/set-url/{id}',[UserLandingPageController::class,'setUrl'])->name('landing.page.set.url');
+
+    // Product routes
     Route::resource('products', UserProductController::class);
 });
-Route::get('/share/project/{projectUrl}', [UserLandingPageController::class, 'shareProject'])->name('landing.page.share.project');
+//shareable link landing page
+Route::get('/{id}', [UserLandingPageController::class, 'shareProject'])->name('landing.page.share.project');
+Route::post('/report/abuse', [UserLandingPageController::class, 'reportAbuse'])->name('landing.page.report.abuse');
+
 //Admin routes
 Route::prefix('admin')->name('admin.')->middleware('is_admin')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'Index'])->name('home');

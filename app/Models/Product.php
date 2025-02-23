@@ -22,6 +22,7 @@ class Product extends Model
         'stock',
         'specification',
         'brand',
+        'delivery_fee',
         'created_at',
         'updated_at',
     ];

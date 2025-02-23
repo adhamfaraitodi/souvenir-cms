@@ -89,6 +89,12 @@ const Page = ({ product }) => {
                             <p className="text-gray-500">Brand:</p>
                             <p className="font-medium">{product.brand}</p>
                         </div>
+                        {product.delivery_fee && (
+                            <div className="flex flex-row gap-4">
+                                <p className="text-gray-500">Delivery Fee:</p>
+                                <p className="font-medium">{product.delivery_fee}</p>
+                            </div>
+                        )}
                     </div>
                     <div>
                         <p className="mb-2 font-bold">Specifications</p>
