@@ -16,13 +16,12 @@ const Page = ({ landingPages, themes }) => {
     const [currentPage, setCurrentPage] = useState(null);
     const [urlError, setUrlError] = useState("");
 
-    // Form for editing landing page
+
     const { data: editData, setData: setEditData, put: putEdit, processing: editProcessing, errors: editErrors } = useForm({
         title: "",
         theme_id: "",
     });
 
-    // Form for sharing landing page
     const { data: shareData, setData: setShareData, post: postShare, processing: shareProcessing, errors: shareErrors } = useForm({
         url: "",
         url_redirect: "",

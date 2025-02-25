@@ -117,26 +117,27 @@ class LandingPageController extends Controller
         ]);
     }
 
-    public function shareProject(Request $request,string $id)
+    public function shareProject(Request $request, string $id)
     {
         $landingPage = LandingPage::where('url', $id)
             ->select('html_code', 'css_code', 'id', 'url_redirect')
             ->firstOrFail();
-        if ($landingPage->url_redirect) {
-            return redirect()->away($landingPage->url_redirect);
-        }
+    
         $utmParams = [
             'utm_source'   => $request->query('utm_source'),
             'utm_medium'   => $request->query('utm_medium'),
             'utm_campaign' => $request->query('utm_campaign'),
         ];
+    
         return Inertia::render('User/LandingPage/Id/Shared', [
-            'id' => $landingPage->id,
-            'html_code' => $landingPage->html_code,
-            'css_code' => $landingPage->css_code,
-            'utm' => $utmParams,
+            'id'           => $landingPage->id,
+            'html_code'    => $landingPage->html_code,
+            'css_code'     => $landingPage->css_code,
+            'utm'          => $utmParams,
+            'redirect_url' => $landingPage->url_redirect,
         ]);
     }
+    
     public function reportAbuse(Request $request){
         $request->validate([
             'id' => 'required|exists:landing_pages,id',

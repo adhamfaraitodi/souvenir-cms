@@ -10,7 +10,7 @@ const Page = ({ html_code, css_code }) => {
     const { data, setData, post, processing, errors } = useForm({
         html: "",
         css: "",
-        name: "", // Optional: if you want to name your template
+        name: "", 
     });
 
     useEffect(() => {

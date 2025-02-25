@@ -2,19 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { router } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 
-
-
-const SharedLandingPage = ({ id,html_code, css_code,utm }) => {
+const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportMessage, setReportMessage] = useState('');
     const [selectedReason, setSelectedReason] = useState('');
-    const reasons = ["Spam", "Scam", "Inappropriate Content", "Other"];
+    const reasons = ["Spam", "Scam", "Inappropriate Content","Suspicious Link", "Other"];
     const { flash } = usePage().props;
 
     useEffect(() => {
         if (flash?.success) {
-            alert(flash.success); // Show success message
-            setIsModalOpen(false); // Close modal
+            alert(flash.success);
+            setIsReportModalOpen(false);
         }
     }, [flash]);
 
@@ -26,7 +25,7 @@ const SharedLandingPage = ({ id,html_code, css_code,utm }) => {
             document.head.removeChild(styleElement);
         };
     }, [css_code]);
-    //use effect to capture utm parameter and send to google analytic, note not yet declare script in head for id google analytic
+
     useEffect(() => {
         if (utm) {
             const { utm_source, utm_medium, utm_campaign } = utm;
@@ -55,7 +54,7 @@ const SharedLandingPage = ({ id,html_code, css_code,utm }) => {
         }, {
             onSuccess: () => {
                 alert("Report submitted successfully.");
-                setIsModalOpen(false);
+                setIsReportModalOpen(false);
             },
             onError: () => {
                 alert("Failed to submit report.");
@@ -64,21 +63,37 @@ const SharedLandingPage = ({ id,html_code, css_code,utm }) => {
         });
     };
 
+    const handleRedirect = () => {
+        window.location.href = redirect_url;
+    };
+
     return (
         <div className="min-h-screen w-full">
             <div dangerouslySetInnerHTML={{ __html: html_code }} className="w-full" />
-
+            {redirect_url && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 justify-items-center" role="alert">
+                <p className="font-bold">Warning</p>
+                <p>You are about to visit an external link: 
+                    <span className="block text-blue-600 break-all">{redirect_url}</span>
+                </p>
+                <button
+                    className="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 transition mt-2"
+                    onClick={handleRedirect}
+                >
+                    Proceed
+                </button>
+            </div>
+            )}
             <div className="p-4 bg-gray-100 text-center border-t border-gray-300">
                 <p className="text-sm text-gray-700">
-                    If you find this page not following our guideline
-                    <button onClick={() => setIsModalOpen(true)} className="text-red-600 hover:underline">Report abuse</button>
+                    If you find this page not following our guidelines,
+                    <button onClick={() => setIsReportModalOpen(true)} className="text-red-600 hover:underline ml-2">Report abuse</button>
                 </p>
             </div>
-
-            {isModalOpen && (
+            {isReportModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="bg-white p-4 rounded-lg shadow-lg w-96">
-                        <h2 className="text-lg font-semibold mb-2"> Report Abuse</h2>
+                        <h2 className="text-lg font-semibold mb-2">Report Abuse</h2>
 
                         <select
                             className="w-full border p-2 rounded mb-2"
@@ -102,7 +117,7 @@ const SharedLandingPage = ({ id,html_code, css_code,utm }) => {
                         <div className="flex justify-end space-x-2">
                             <button
                                 className="bg-gray-400 text-white py-1 px-3 rounded hover:bg-gray-500 transition"
-                                onClick={() => setIsModalOpen(false)}
+                                onClick={() => setIsReportModalOpen(false)}
                             >
                                 Cancel
                             </button>
