@@ -19,6 +19,7 @@ const Page = ({ landingPages, themes }) => {
 
     const { data: editData, setData: setEditData, put: putEdit, processing: editProcessing, errors: editErrors } = useForm({
         title: "",
+        edit_with:"",
         theme_id: "",
     });
 
@@ -42,16 +43,13 @@ const Page = ({ landingPages, themes }) => {
     };
     const validateAndFormatUrl = (value) => {
         const formattedValue = value.toLowerCase()
-            .replace(/[^a-z0-9-]/g, '') // Remove all non-alphanumeric characters except hyphen
-            .replace(/--+/g, '-')       // Replace multiple hyphens with single hyphen
-            .replace(/^-+|-+$/g, '');   // Remove hyphens from start and end
-
+            .replace(/[^a-z0-9-]/g, '') 
+            .replace(/--+/g, '-')   
+            .replace(/^-+|-+$/g, '');   
         return formattedValue;
     };
     const handleUrlChange = (value) => {
         const formattedUrl = validateAndFormatUrl(value);
-
-        // Basic validation
         if (value !== formattedUrl) {
             setUrlError("Only lowercase letters, numbers, and hyphens are allowed");
         } else {
@@ -60,6 +58,11 @@ const Page = ({ landingPages, themes }) => {
 
         setShareData("url", formattedUrl);
     };
+    const editWithOptions = [
+        { value: "1", label: "Default" },
+        { value: "2", label: "Form" },
+        { value: "3", label: "Grapes JS" },
+    ];
 
     const handleCloseEditPopup = () => {
         setEditPopupVisible(false);
@@ -117,18 +120,23 @@ const Page = ({ landingPages, themes }) => {
                 Your Landing Page
             </Title>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {landingPages.map((page) => (
+            {landingPages.map((page) => (
                     <LandingPageCard
                         key={page.id}
                         id={page.landing_page_code}
                         title={page.title}
-                        link={`landing-page/edit/${page.landing_page_code}`}
+                        link={
+                            page.edit_with === 3
+                                ? `landing-page/edit/grapesjs/${page.landing_page_code}`
+                                : `landing-page/edit/form/${page.landing_page_code}`
+                        }
                         theme={page.theme.title}
                         onEditClick={() => handleEditClick(page)}
                         onShareClick={() => handleShareClick(page)}
                     />
                 ))}
             </div>
+
 
             <PopupWrapper
                 isVisible={isEditPopupVisible}
@@ -149,6 +157,21 @@ const Page = ({ landingPages, themes }) => {
                                 placeholder="Enter landing page title"
                                 className="mb-4 w-full"
                             />
+                            <DropdownSelect
+                                label="Edit with"
+                                value={editData.edit_with}
+                                onChange={(value) => setEditData("edit_with", value)}
+                                error={editErrors.edit_with}
+                                required
+                                className="mb-4 w-full"
+                            >
+                                <option value="">Select an option</option>
+                                {editWithOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </DropdownSelect>
                             <DropdownSelect
                                 label="Select Theme"
                                 value={editData.theme_id}

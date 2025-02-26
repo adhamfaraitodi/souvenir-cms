@@ -5,7 +5,7 @@ import "grapesjs/dist/css/grapes.min.css";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
 
-const Page = ({ html_code, css_code }) => {
+const Page = ({ html_code, css_code,id }) => {
     const [editor, setEditor] = useState(null);
     const { data, setData, post, processing, errors } = useForm({
         html: "",
@@ -30,29 +30,38 @@ const Page = ({ html_code, css_code }) => {
         };
     }, [html_code, css_code]);
 
-    const handleExport = (e) => {
+    const handleExport = async (e) => {
         e.preventDefault();
-
+    
         if (!editor) return;
-
-        // Update form data with current editor content
-        setData({
-            ...data,
-            html: editor.getHtml(),
-            css: editor.getCss(),
-        });
-
-        // Submit the form
-        post("/api/templates/export", {
-            preserveScroll: true,
-            onSuccess: () => {
-                alert("Template exported successfully!");
-            },
-            onError: (errors) => {
-                console.error("Export failed:", errors);
-            },
-        });
+    
+        // Get updated HTML and CSS content from GrapesJS
+        const htmlContent = editor.getHtml();
+        const cssContent = editor.getCss();
+    
+        if (!htmlContent.trim() || !cssContent.trim()) {
+            alert("HTML and CSS cannot be empty!");
+            return;
+        }
+    
+        // Update form data correctly
+        setData("html", htmlContent);
+        setData("css", cssContent);
+    
+        // Wait for state update using a callback
+        setTimeout(() => {
+            post(`/templates/export/${id}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    alert("Template saved successfully!");
+                },
+                onError: (errors) => {
+                    console.error("Export failed:", errors);
+                },
+            });
+        }, 100); // Delay to ensure data is set
     };
+    
 
     return (
         <div>
@@ -65,7 +74,7 @@ const Page = ({ html_code, css_code }) => {
                         processing ? "cursor-not-allowed opacity-50" : ""
                     }`}
                 >
-                    {processing ? "Exporting..." : "Export Template"}
+                    {processing ? "Saving..." : "Save Template"}
                 </button>
                 {errors.html && (
                     <div className="mt-2 text-red-500">{errors.html}</div>

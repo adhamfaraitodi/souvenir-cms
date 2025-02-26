@@ -15,6 +15,7 @@ class LandingPage extends Model
         'landing_page_code',
         'url',
         'url_redirect',
+        'edit_with',
         'html_code',
         'css_code',
         'created_at',
@@ -32,5 +33,9 @@ class LandingPage extends Model
     public function report()
     {
         return $this->hasMany(LandingPageReport::class, 'landing_page_id');
+    }
+    public function content()
+    {
+        return $this->hasOne(Content::class, 'landing_page_id');
     }
 }

@@ -45,8 +45,13 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/account/setting',[AccountController::class,'settings'])->name('account.setting');
     // landing page routes
     Route::get('landing-page',[UserLandingPageController::class,'index'])->name('landing.page.index');
-    Route::get('landing-page/edit/{id}',[UserLandingPageController::class,'edit'])->name('landing.page.edit');
-    Route::post('landing-page/update/{id}',[UserLandingPageController::class,'update'])->name('landing.page.update');
+    //edit wiith grapesjs
+    Route::get('landing-page/edit/grapesjs/{id}',[UserLandingPageController::class,'edit'])->name('landing.page.edit');
+    Route::post('/templates/export/{id}', [UserLandingPageController::class, 'saveExport'])->name('save.export');
+    //edit with form
+    Route::get('landing-page/edit/form/{id}',[UserLandingPageController::class,'editByForm'])->name('landing.page.edit.form');
+    Route::post('landing-page/update/form/{id}',[UserLandingPageController::class,'updateByForm'])->name('landing.page.update.form');
+
     Route::get('landing-page/project-edit/{id}',[UserLandingPageController::class,'projectEdit'])->name('landing.page.project.edit');
     Route::put('landing-page/project-update/{id}',[UserLandingPageController::class,'projectUpdate'])->name('landing.page.project.update');
     Route::get('landing-page/preview/{id}',[UserLandingPageController::class,'show'])->name('landing.page.show');

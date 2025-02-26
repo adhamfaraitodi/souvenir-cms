@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('themes', function (Blueprint $table) {
+        Schema::create('contents', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 255);
-            $table->text('html_code');
-            $table->text('css_code');
-            $table->tinyInteger('for');
+            $table->foreignId('landing_page_id')->constrained('landing_pages')->noActionOnDelete();
+            $table->json('text');
+            $table->json('image_path');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('themes');
+        Schema::dropIfExists('contents');
     }
 };

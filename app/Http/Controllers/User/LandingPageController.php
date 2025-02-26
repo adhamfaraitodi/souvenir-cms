@@ -20,7 +20,7 @@ class LandingPageController extends Controller
             $query->where('user_id', $userId);
         })
             ->with(['theme:id,title,html_code,css_code'])
-            ->get(['id', 'theme_id','title', 'landing_page_code','url', 'html_code', 'css_code']);
+            ->get(['id', 'theme_id','title', 'landing_page_code','url', 'html_code', 'css_code','edit_with']);
         return Inertia::render('User/LandingPage/Index', ['landingPages' => $landingPages,'themes'=>$themes]);
     }
     public function edit(string $id)
@@ -37,18 +37,10 @@ class LandingPageController extends Controller
         return Inertia::render('User/LandingPage/Id/Index', [
             'html_code' => $landingPage->html_code,
             'css_code' => $landingPage->css_code,
+            'id'=>$landingPage->id,
         ]);
     }
-    public function update(Request $request,string $id)
-    {
-        $landingPage = LandingPage::findOrFail($id);
-        $validated = $request->validate([
-            'html_code' => 'required|string',
-            'css_code' => 'required|string',
-        ]);
-        $landingPage->update($validated);
-        return redirect()->route('user.landing.page.index');
-    }
+   
     public function projectEdit(string $id)
     {
         $landingPage = LandingPage::with('theme')
@@ -82,6 +74,7 @@ class LandingPageController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'edit_with' => 'required|integer',
             'theme_id' => 'required|exists:themes,id',
         ]);
         $landingPage = LandingPage::findOrFail($id);
@@ -89,6 +82,7 @@ class LandingPageController extends Controller
         $landingPage->update([
             'title' => $validated['title'],
             'theme_id' => $validated['theme_id'],
+            'edit_with' => $validated['edit_with'],
             'html_code' => $theme->html_code,
             'css_code' => $theme->css_code,
         ]);
@@ -168,5 +162,17 @@ class LandingPageController extends Controller
 
         return redirect()->route('user.landing.page.index')
             ->with('success', 'Landing page updated successfully');
+    }
+    public function saveExport(Request $request,string $id){
+        $validated = $request->validate([
+            'html' => 'required|string',
+            'css' => 'required|string',
+        ]);
+        $landingPage = LandingPage::findOrFail($id);
+        $landingPage->update([
+            'html_code' => $validated['html'],
+            'css_code' => $validated['css'],
+        ]);
+        return redirect()->route('user.landing.page.index')->with('success', 'Landing page updated successfully!');
     }
 }

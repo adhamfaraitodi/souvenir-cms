@@ -80,7 +80,7 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
                     className="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 transition mt-2"
                     onClick={handleRedirect}
                 >
-                    Proceed
+                    Redirect
                 </button>
             </div>
             )}

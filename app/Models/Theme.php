@@ -13,6 +13,7 @@ class Theme extends Model
         'tittle',
         'html_code',
         'css_code',
+        'for',
         'created_at',
         'updated_at'
     ];

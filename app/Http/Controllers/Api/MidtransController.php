@@ -114,6 +114,7 @@ class MidtransController extends Controller
             'theme_id' => 1,
             'title' => 'Untitled',
             'landing_page_code' => $landingPageCode,
+            'edit_with'=>1,
             'html_code' => $theme->html_code,
             'css_code' => $theme->css_code,
         ]);
