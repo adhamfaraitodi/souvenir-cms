@@ -16,10 +16,9 @@ const Page = ({ landingPages, themes }) => {
     const [currentPage, setCurrentPage] = useState(null);
     const [urlError, setUrlError] = useState("");
 
-
     const { data: editData, setData: setEditData, put: putEdit, processing: editProcessing, errors: editErrors } = useForm({
         title: "",
-        edit_with:"",
+        edit_with: "",
         theme_id: "",
     });
 
@@ -30,6 +29,11 @@ const Page = ({ landingPages, themes }) => {
 
     const handleEditClick = (page) => {
         setCurrentPage(page);
+        setEditData({
+            title: page.title,
+            edit_with: page.edit_with.toString(),
+            theme_id: page.theme_id.toString(),
+        });
         setEditPopupVisible(true);
     };
 
@@ -41,6 +45,7 @@ const Page = ({ landingPages, themes }) => {
             setShareData("url_redirect", page.url_redirect);
         }
     };
+
     const validateAndFormatUrl = (value) => {
         const formattedValue = value.toLowerCase()
             .replace(/[^a-z0-9-]/g, '') 
@@ -48,6 +53,7 @@ const Page = ({ landingPages, themes }) => {
             .replace(/^-+|-+$/g, '');   
         return formattedValue;
     };
+
     const handleUrlChange = (value) => {
         const formattedUrl = validateAndFormatUrl(value);
         if (value !== formattedUrl) {
@@ -58,6 +64,7 @@ const Page = ({ landingPages, themes }) => {
 
         setShareData("url", formattedUrl);
     };
+
     const editWithOptions = [
         { value: "1", label: "Default" },
         { value: "2", label: "Form" },
@@ -67,7 +74,7 @@ const Page = ({ landingPages, themes }) => {
     const handleCloseEditPopup = () => {
         setEditPopupVisible(false);
         setCurrentPage(null);
-        setEditData({ title: "", theme_id: "" });
+        setEditData({ title: "", edit_with: "", theme_id: "" });
     };
 
     const handleCloseSharePopup = () => {
@@ -79,11 +86,32 @@ const Page = ({ landingPages, themes }) => {
 
     useEffect(() => {
         if (currentPage) {
-            setEditData("title", currentPage.title);
-            setEditData("theme_id", currentPage.theme_id);
+            setEditData({
+                title: currentPage.title,
+                edit_with: currentPage.edit_with.toString(),
+                theme_id: currentPage.theme_id.toString(),
+            });
         }
     }, [currentPage, setEditData]);
 
+    const filteredThemes = themes.filter(theme => {
+        if (editData.edit_with === "1") return false; 
+        if (editData.edit_with === "2") return theme.for === 1; 
+        if (editData.edit_with === "3") return theme.for === 2; 
+        return false;
+    });
+
+    useEffect(() => {
+        if (editData.edit_with === "1") {
+            const defaultTheme = themes.find(theme => theme.for === 1);
+            if (defaultTheme) {
+                setEditData("theme_id", defaultTheme.id.toString());
+            }
+        } else if (editData.edit_with === "2" || editData.edit_with === "3") {
+            setEditData("theme_id", "");
+        }
+    }, [editData.edit_with, themes, setEditData]);
+    
     const handleEditSubmit = (e) => {
         e.preventDefault();
         putEdit(`/landing-page/project-update/${currentPage.id}`, {
@@ -120,7 +148,7 @@ const Page = ({ landingPages, themes }) => {
                 Your Landing Page
             </Title>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {landingPages.map((page) => (
+                {landingPages.map((page) => (
                     <LandingPageCard
                         key={page.id}
                         id={page.landing_page_code}
@@ -131,22 +159,17 @@ const Page = ({ landingPages, themes }) => {
                                 : `landing-page/edit/form/${page.landing_page_code}`
                         }
                         theme={page.theme.title}
+                        edit={page.edit_with}
                         onEditClick={() => handleEditClick(page)}
                         onShareClick={() => handleShareClick(page)}
                     />
                 ))}
             </div>
 
-
-            <PopupWrapper
-                isVisible={isEditPopupVisible}
-                onClose={handleCloseEditPopup}
-            >
+            <PopupWrapper isVisible={isEditPopupVisible} onClose={handleCloseEditPopup}>
                 {currentPage && (
                     <div className="rounded-lg bg-white p-4 shadow-md">
-                        <h2 className="mb-4 text-lg font-bold">
-                            Edit Landing Page
-                        </h2>
+                        <h2 className="mb-4 text-lg font-bold">Edit Landing Page</h2>
                         <form onSubmit={handleEditSubmit}>
                             <InputForm
                                 label="Landing Page Title"
@@ -167,32 +190,38 @@ const Page = ({ landingPages, themes }) => {
                             >
                                 <option value="">Select an option</option>
                                 {editWithOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
+                                    <option key={option.value} value={option.value}>{option.label}</option>
                                 ))}
                             </DropdownSelect>
-                            <DropdownSelect
-                                label="Select Theme"
-                                value={editData.theme_id}
-                                onChange={(value) => setEditData("theme_id", value)}
-                                error={editErrors.theme_id}
-                                required
-                                className="mb-4 w-full"
-                            >
-                                <option value="">Select a theme</option>
-                                {themes.map((theme) => (
-                                    <option key={theme.id} value={theme.id}>
-                                        {theme.title}
-                                    </option>
-                                ))}
-                            </DropdownSelect>
-                            <div className="mb-4 flex justify-end">
-                                <Button
-                                    type="submit"
-                                    theme="default"
-                                    disabled={editProcessing}
+                            
+                            {editData.edit_with === "1" ? (
+                                <div className="mb-4 w-full">
+                                    <label className="mb-1 block text-sm font-medium text-gray-700">
+                                        Theme
+                                    </label>
+                                    <div className="rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-700">
+                                        {themes.find(theme => theme.id === editData.theme_id)?.title || 'Default Theme'}
+                                    </div>
+                                    <input type="hidden" name="theme_id" value={editData.theme_id} />
+                                </div>
+                            ) : (
+                                <DropdownSelect
+                                    label="Select Theme"
+                                    value={editData.theme_id}
+                                    onChange={(value) => setEditData("theme_id", value)}
+                                    error={editErrors.theme_id}
+                                    required
+                                    className="mb-4 w-full"
                                 >
+                                    <option value="">Select a theme</option>
+                                    {filteredThemes.map((theme) => (
+                                        <option key={theme.id} value={theme.id}>{theme.title}</option>
+                                    ))}
+                                </DropdownSelect>
+                            )}
+                            
+                            <div className="mb-4 flex justify-end">
+                                <Button type="submit" theme="default" disabled={editProcessing}>
                                     {editProcessing ? "Saving..." : "Save Changes"}
                                 </Button>
                             </div>

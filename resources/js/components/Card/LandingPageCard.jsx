@@ -7,6 +7,7 @@ const LandingPageCard = ({
     theme,
     id,
     link,
+    edit,
     onEditClick,
     onShareClick,
 }) => {
@@ -26,6 +27,14 @@ const LandingPageCard = ({
                     {title}
                 </h3>
                 <p className="text-xs text-gray-500">Theme: {theme}</p>
+                <p className="text-xs text-gray-500">
+                        Edit with: {
+                            {
+                            1: "Default",
+                            2: "Form",
+                            3: "Grapes JS"
+                            }[edit] || "Unknown"
+                        }</p>
             </div>
             <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                 <button
