@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\UserAuthController;
@@ -45,7 +46,7 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('/account/setting',[AccountController::class,'settings'])->name('account.setting');
     // landing page routes
     Route::get('landing-page',[UserLandingPageController::class,'index'])->name('landing.page.index');
-    //edit wiith grapesjs
+    //edit with grapesjs
     Route::get('landing-page/edit/grapesjs/{id}',[UserLandingPageController::class,'edit'])->name('landing.page.edit');
     Route::post('/templates/export/{id}', [UserLandingPageController::class, 'saveExport'])->name('save.export');
     //edit with form
@@ -58,7 +59,6 @@ Route::name('user.')->middleware('is_user')->group(function () {
     Route::get('landing-page/share/{id}',[UserLandingPageController::class,'share'])->name('landing.page.share');
     Route::post('landing-page/set-url/{id}',[UserLandingPageController::class,'setUrl'])->name('landing.page.set.url');
 
-    // Product routes
     Route::resource('products', UserProductController::class);
 });
 //shareable link landing page

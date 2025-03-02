@@ -8,6 +8,8 @@ use App\Models\LandingPageReport;
 use App\Models\Theme;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class LandingPageController extends Controller
@@ -40,7 +42,7 @@ class LandingPageController extends Controller
             'id'=>$landingPage->id,
         ]);
     }
-   
+
     public function projectEdit(string $id)
     {
         $landingPage = LandingPage::with('theme')
@@ -116,13 +118,13 @@ class LandingPageController extends Controller
         $landingPage = LandingPage::where('url', $id)
             ->select('html_code', 'css_code', 'id', 'url_redirect')
             ->firstOrFail();
-    
+
         $utmParams = [
             'utm_source'   => $request->query('utm_source'),
             'utm_medium'   => $request->query('utm_medium'),
             'utm_campaign' => $request->query('utm_campaign'),
         ];
-    
+
         return Inertia::render('User/LandingPage/Id/Shared', [
             'id'           => $landingPage->id,
             'html_code'    => $landingPage->html_code,
@@ -131,7 +133,7 @@ class LandingPageController extends Controller
             'redirect_url' => $landingPage->url_redirect,
         ]);
     }
-    
+
     public function reportAbuse(Request $request){
         $request->validate([
             'id' => 'required|exists:landing_pages,id',
@@ -175,4 +177,32 @@ class LandingPageController extends Controller
         ]);
         return redirect()->route('user.landing.page.index')->with('success', 'Landing page updated successfully!');
     }
+    public function storeImage(Request $request)
+    {
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+        ]);
+
+        $uploadedImages = [];
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $imageFile) {
+//                $filename = Str::uuid() . '.' . $imageFile->getClientOriginalExtension();
+                $path = $imageFile->store('uploads', 'public');
+                $url = asset('storage/' . $path);
+
+                $uploadedImages[] = [
+                    'name' => $imageFile->getClientOriginalName(),
+                    'url' => $url,
+                    'path' => $path,
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'images' => $uploadedImages,
+        ]);
+    }
+
 }

@@ -9,7 +9,8 @@ const Layout = ({ children, menus }) => {
     return (
         <>
             <Head>
-                <title>Sovenier</title>
+                <title>Souvenir</title>
+                <meta name="csrf-token" content="{{ csrf_token() }}"></meta>
                 {/* <meta
                     head-key="description"
                     name="description"

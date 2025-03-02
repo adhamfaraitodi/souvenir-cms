@@ -62,7 +62,6 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
             preserveScroll: true
         });
     };
-
     const handleRedirect = () => {
         window.location.href = redirect_url;
     };
@@ -73,7 +72,7 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
             {redirect_url && (
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 justify-items-center" role="alert">
                 <p className="font-bold">Warning</p>
-                <p>You are about to visit an external link: 
+                <p>You are about to visit an external link:
                     <span className="block text-blue-600 break-all">{redirect_url}</span>
                 </p>
                 <button
