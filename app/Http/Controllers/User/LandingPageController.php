@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Content;
 use App\Models\LandingPage;
 use App\Models\LandingPageReport;
 use App\Models\Theme;
@@ -91,7 +92,6 @@ class LandingPageController extends Controller
         return redirect()->route('user.landing.page.index')
             ->with('success', 'Landing page updated successfully');
     }
-    // maybe it is not automatic yet
     public function share(string $id)
     {
         $landingPage = LandingPage::where('landing_page_code', $id)
@@ -203,5 +203,10 @@ class LandingPageController extends Controller
             'images' => $uploadedImages,
         ]);
     }
-
+    public function editByForm(string $id){
+        $landingPage = LandingPage::where('landing_page_code', $id)
+            ->firstOrFail();
+        $content= Content::where('',$id);
+        return Inertia::render('User/LandingPage/Id/Form');
+    }
 }

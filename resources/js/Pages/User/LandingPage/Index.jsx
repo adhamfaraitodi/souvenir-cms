@@ -48,9 +48,9 @@ const Page = ({ landingPages, themes }) => {
 
     const validateAndFormatUrl = (value) => {
         const formattedValue = value.toLowerCase()
-            .replace(/[^a-z0-9-]/g, '') 
-            .replace(/--+/g, '-')   
-            .replace(/^-+|-+$/g, '');   
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/--+/g, '-')
+            .replace(/^-+|-+$/g, '');
         return formattedValue;
     };
 
@@ -95,9 +95,9 @@ const Page = ({ landingPages, themes }) => {
     }, [currentPage, setEditData]);
 
     const filteredThemes = themes.filter(theme => {
-        if (editData.edit_with === "1") return false; 
-        if (editData.edit_with === "2") return theme.for === 1; 
-        if (editData.edit_with === "3") return theme.for === 2; 
+        if (editData.edit_with === "1") return false;
+        if (editData.edit_with === "2") return theme.for === 1;
+        if (editData.edit_with === "3") return theme.for === 2;
         return false;
     });
 
@@ -111,7 +111,7 @@ const Page = ({ landingPages, themes }) => {
             setEditData("theme_id", "");
         }
     }, [editData.edit_with, themes, setEditData]);
-    
+
     const handleEditSubmit = (e) => {
         e.preventDefault();
         putEdit(`/landing-page/project-update/${currentPage.id}`, {
@@ -139,9 +139,10 @@ const Page = ({ landingPages, themes }) => {
 
     const baseUrl = window.location.origin;
     const shareUrl = currentPage?.url
-        ? `${baseUrl}/${currentPage.url}/?utm_source=share&utm_medium=qr&utm_campaign=landing_page`
+        ? `${baseUrl}/${currentPage.url}`
         : "";
 
+    // /?utm_source=share&utm_medium=qr&utm_campaign=landing_page
     return (
         <div className="mb-5 sm:mb-10 md:mb-20">
             <Title className="mb-4 font-semibold sm:mb-6 md:mb-8">
@@ -193,7 +194,7 @@ const Page = ({ landingPages, themes }) => {
                                     <option key={option.value} value={option.value}>{option.label}</option>
                                 ))}
                             </DropdownSelect>
-                            
+
                             {editData.edit_with === "1" ? (
                                 <div className="mb-4 w-full">
                                     <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -219,7 +220,7 @@ const Page = ({ landingPages, themes }) => {
                                     ))}
                                 </DropdownSelect>
                             )}
-                            
+
                             <div className="mb-4 flex justify-end">
                                 <Button type="submit" theme="default" disabled={editProcessing}>
                                     {editProcessing ? "Saving..." : "Save Changes"}
