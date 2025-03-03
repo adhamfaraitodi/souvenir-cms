@@ -3,12 +3,17 @@ import { router } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 
 const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportMessage, setReportMessage] = useState('');
     const [selectedReason, setSelectedReason] = useState('');
-    const reasons = ["Spam", "Scam", "Inappropriate Content","Suspicious Link", "Other"];
+    const reasons = ["Spam", "Scam", "Inappropriate Content", "Suspicious Link", "Other"];
     const { flash } = usePage().props;
+
+    useEffect(() => {
+        if (redirect_url) {
+            window.location.href = redirect_url;
+        }
+    }, [redirect_url]);
 
     useEffect(() => {
         if (flash?.success) {
@@ -62,27 +67,10 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
             preserveScroll: true
         });
     };
-    const handleRedirect = () => {
-        window.location.href = redirect_url;
-    };
 
     return (
         <div className="min-h-screen w-full">
             <div dangerouslySetInnerHTML={{ __html: html_code }} className="w-full" />
-            {redirect_url && (
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 justify-items-center" role="alert">
-                <p className="font-bold">Warning</p>
-                <p>You are about to visit an external link:
-                    <span className="block text-blue-600 break-all">{redirect_url}</span>
-                </p>
-                <button
-                    className="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 transition mt-2"
-                    onClick={handleRedirect}
-                >
-                    Redirect
-                </button>
-            </div>
-            )}
             <div className="p-4 bg-gray-100 text-center border-t border-gray-300">
                 <p className="text-sm text-gray-700">
                     If you find this page not following our guidelines,
@@ -93,7 +81,6 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="bg-white p-4 rounded-lg shadow-lg w-96">
                         <h2 className="text-lg font-semibold mb-2">Report Abuse</h2>
-
                         <select
                             className="w-full border p-2 rounded mb-2"
                             value={selectedReason}
@@ -104,7 +91,6 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
                                 <option key={reason} value={reason}>{reason}</option>
                             ))}
                         </select>
-
                         <textarea
                             className="w-full border p-2 rounded mb-2"
                             placeholder="Additional details (optional)..."
@@ -112,7 +98,6 @@ const SharedLandingPage = ({ id, html_code, css_code, utm, redirect_url }) => {
                             value={reportMessage}
                             onChange={(e) => setReportMessage(e.target.value)}
                         />
-
                         <div className="flex justify-end space-x-2">
                             <button
                                 className="bg-gray-400 text-white py-1 px-3 rounded hover:bg-gray-500 transition"

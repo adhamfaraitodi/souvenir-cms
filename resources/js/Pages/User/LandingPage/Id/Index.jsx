@@ -1,22 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import grapesjs from "grapesjs";
 import gjsPresetWebpage from "grapesjs-preset-webpage";
 import gjsBlocksBasic from "grapesjs-blocks-basic";
-import { useForm } from "@inertiajs/react";
 import axios from "axios";
 import "grapesjs/dist/css/grapes.min.css";
 import Layout from "../../../../components/Layout";
 import { userMenus } from "../../../../libs/menus";
 
 const Page = ({ html_code, css_code, id }) => {
-    const [editor, setEditor] = useState(null);
-    const { data, setData, post, processing, errors } = useForm({
-        html: "",
-        css: "",
-    });
+    const editorRef = useRef(null);
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({});
+    const saveButtonRef = useRef(null);
+
+    const handleSave = useCallback(async () => {
+        if (!editorRef.current) return;
+
+        const editor = editorRef.current;
+        const htmlContent = editor.getHtml();
+        const cssContent = editor.getCss();
+
+        if (!htmlContent.trim()) {
+            alert("HTML content cannot be empty!");
+            return;
+        }
+
+        setProcessing(true);
+        setErrors({});
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        try {
+            await axios.post(`/templates/export/${id}`, {
+                html: htmlContent,
+                css: cssContent
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
+
+            alert("Template saved successfully!");
+        } catch (error) {
+            console.error("Export failed:", error);
+
+            if (error.response && error.response.data && error.response.data.errors) {
+                setErrors(error.response.data.errors);
+
+                Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                    console.error(`${key}: ${value}`);
+                });
+            } else {
+                alert("Failed to save template. Please try again.");
+            }
+        } finally {
+            setProcessing(false);
+        }
+    }, [id]);
 
     useEffect(() => {
-        // Initialize GrapesJS
+        // Initialize the editor
         const editor = grapesjs.init({
             container: "#gjs",
             fromElement: true,
@@ -26,7 +70,6 @@ const Page = ({ html_code, css_code, id }) => {
                 gjsPresetWebpage: {},
             },
             storageManager: false,
-            // Configure asset manager to use Laravel's file upload endpoint
             assetManager: {
                 upload: '/api/upload-image',
                 uploadName: 'image',
@@ -39,7 +82,6 @@ const Page = ({ html_code, css_code, id }) => {
                         formData.append('images[]', file);
                     }
 
-                    // Include CSRF token
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
                     return axios.post('/api/upload-image', formData, {
@@ -64,7 +106,6 @@ const Page = ({ html_code, css_code, id }) => {
                         });
                 }
             },
-            // Enable panels for image uploads
             panels: {
                 defaults: [
                     {
@@ -87,12 +128,11 @@ const Page = ({ html_code, css_code, id }) => {
             }
         });
 
-        // Set the editor state and load content
-        setEditor(editor);
+        editorRef.current = editor;
+
         editor.setComponents(html_code);
         editor.setStyle(css_code);
 
-        // Add commands for responsive previews
         editor.Commands.add('set-device-desktop', {
             run: (editor) => editor.setDevice('Desktop')
         });
@@ -101,67 +141,52 @@ const Page = ({ html_code, css_code, id }) => {
             run: (editor) => editor.setDevice('Mobile')
         });
 
-        // Cleanup on component unmount
-        return () => {
-            editor.destroy();
-        };
-    }, [html_code, css_code]);
-
-    const handleExport = async (e) => {
-        e.preventDefault();
-
-        if (!editor) return;
-
-        // Get updated HTML and CSS content from GrapesJS
-        const htmlContent = editor.getHtml();
-        const cssContent = editor.getCss();
-
-        if (!htmlContent.trim()) {
-            alert("HTML content cannot be empty!");
-            return;
+        if (!editor.Panels.getPanel('options')) {
+            editor.Panels.addPanel({
+                id: 'options',
+                el: '.panel__options',
+                buttons: [],
+            });
         }
 
-        // Update form data
-        setData({
-            html: htmlContent,
-            css: cssContent
+        // Add save button
+        editor.Panels.addButton('options', {
+            id: 'save-template',
+            className: 'fa fa-save',
+            // label: 'Save',
+            command: 'save-template',
+            attributes: { title: 'Save Template' }
         });
 
-        // Submit the form data to Laravel backend
-        post(`/templates/export/${id}`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                alert("Template saved successfully!");
-            },
-            onError: (errors) => {
-                console.error("Export failed:", errors);
-            },
+        editor.Commands.add('save-template', {
+            run: () => {
+                handleSave();
+                return false;
+            }
         });
-    };
+
+        return () => {
+            if (editorRef.current) {
+                editorRef.current.destroy();
+                editorRef.current = null;
+            }
+        };
+    }, [html_code, css_code, id, handleSave]);
 
     return (
         <div className="grapesjs-container">
             <div className="panel__devices"></div>
+            <div className="panel__options"></div>
             <div id="gjs" style={{ height: "80vh", overflow: "hidden" }}></div>
-            <div className="editor-tools mt-4 flex justify-between">
-                <form onSubmit={handleExport} className="mt-4">
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        className={`rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 ${
-                            processing ? "cursor-not-allowed opacity-50" : ""
-                        }`}
-                    >
-                        {processing ? "Saving..." : "Save Template"}
-                    </button>
-                    {errors.html && (
-                        <div className="mt-2 text-red-500">{errors.html}</div>
-                    )}
-                    {errors.css && (
-                        <div className="mt-2 text-red-500">{errors.css}</div>
-                    )}
-                </form>
-            </div>
+
+            {Object.keys(errors).length > 0 && (
+                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded">
+                    <h3 className="text-red-700 font-medium">Error saving template:</h3>
+                    {Object.entries(errors).map(([key, message]) => (
+                        <div key={key} className="text-red-600">{message}</div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

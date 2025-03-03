@@ -187,7 +187,6 @@ class LandingPageController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
-//                $filename = Str::uuid() . '.' . $imageFile->getClientOriginalExtension();
                 $path = $imageFile->store('uploads', 'public');
                 $url = asset('storage/' . $path);
 
